@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Artsiom Dubrounik — Senior Ruby on Rails Engineer. Interactive resume styled as RubyMine IDE.">
+  <meta name="author" content="Artsiom Dubrounik">
+  <meta property="og:title" content="Artsiom Dubrounik — dubrounik.resume.rb">
+  <meta property="og:description" content="Senior Software Engineer. 8+ years Ruby/Rails. Open in RubyMine.">
+  <meta property="og:type" content="website">
+  <title>dubrounik.resume.rb — Artsiom Dubrounik</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23CC7832' width='100' height='100' rx='12'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='%232B2B2B' font-family='monospace'>Rb</text></svg>">
+</head>
+<body>
+  <!-- Boot splash -->
+  <div id="splash" class="splash" aria-hidden="false">
+    <div class="splash-inner">
+      <div class="splash-logo">
+        <span class="splash-rb">Rb</span>
+        <span class="splash-name">RubyMine</span>
+      </div>
+      <p class="splash-tagline" data-i18n="splash.tagline">Indexing dubrounik.resume.rb…</p>
+      <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+      <p class="splash-hint" data-i18n="splash.hint">Press any key to skip indexing</p>
+    </div>
+  </div>
+
+  <div id="ide" class="ide hidden">
+    <!-- Title bar -->
+    <header class="titlebar">
+      <div class="titlebar-traffic">
+        <span class="dot red" data-action="close" title="Close"></span>
+        <span class="dot yellow" data-action="minimize" title="Minimize"></span>
+        <span class="dot green" data-action="maximize" title="Maximize"></span>
+      </div>
+      <span class="titlebar-project">dubrounik.resume — RubyMine 2025.1</span>
+      <div class="titlebar-actions">
+        <button class="lang-toggle" id="langToggle" aria-label="Switch language">EN / RU</button>
+      </div>
+    </header>
+
+    <!-- Menu -->
+    <nav class="menubar" aria-label="Main menu">
+      <button class="menu-item" data-menu="file" data-i18n="menu.file">File</button>
+      <button class="menu-item" data-menu="edit" data-i18n="menu.edit">Edit</button>
+      <button class="menu-item" data-menu="view" data-i18n="menu.view">View</button>
+      <button class="menu-item" data-menu="navigate" data-i18n="menu.navigate">Navigate</button>
+      <button class="menu-item" data-menu="code" data-i18n="menu.code">Code</button>
+      <button class="menu-item" data-menu="refactor" data-i18n="menu.refactor">Refactor</button>
+      <button class="menu-item" data-menu="run" data-i18n="menu.run">Run</button>
+      <button class="menu-item" data-menu="tools" data-i18n="menu.tools">Tools</button>
+      <button class="menu-item" data-menu="git" data-i18n="menu.git">Git</button>
+      <button class="menu-item" data-menu="help" data-i18n="menu.help">Help</button>
+    </nav>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="tb-btn run-btn" id="runBtn" title="Run dubrounik.resume.rb">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+        <span data-i18n="toolbar.run">Run</span>
+      </button>
+      <button class="tb-btn debug-btn" id="debugBtn" title="Debug">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M7 4h2v5H7zm8 0h2v5h-2zM4 11h16v2H4zm3 7h2v5H7zm8 0h2v5h-2z"/></svg>
+        <span data-i18n="toolbar.debug">Debug</span>
+      </button>
+      <span class="tb-sep"></span>
+      <button class="tb-btn" id="searchBtn" title="Find in Path (⌘⇧F)">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      </button>
+      <button class="tb-btn" id="paletteBtn" title="Search Everywhere (⇧⇧)">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      </button>
+      <span class="tb-config" data-i18n="toolbar.config">dubrounik.resume.rb</span>
+    </div>
+
+    <!-- Main workspace -->
+    <div class="workspace">
+      <!-- Activity bar -->
+      <aside class="activity-bar">
+        <button class="ab-btn active" data-panel="project" title="Project">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+        </button>
+        <button class="ab-btn" data-panel="git" title="Git">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+        </button>
+        <button class="ab-btn" data-panel="structure" title="Structure">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M3 3h8v8H3zm10 0h8v8h-8zM3 13h8v8H3zm10 0h8v8h-8z"/></svg>
+        </button>
+        <button class="ab-btn" data-panel="terminal" title="Terminal">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10z"/></svg>
+        </button>
+        <button class="ab-btn ab-hire" data-panel="contact" title="Hire Me">
+          <span>💎</span>
+        </button>
+      </aside>
+
+      <!-- Side panel -->
+      <aside class="side-panel" id="sidePanel">
+        <div class="panel-header">
+          <span id="panelTitle" data-i18n="panel.project">Project</span>
+          <button class="panel-close" id="panelClose" aria-label="Close panel">×</button>
+        </div>
+        <div class="panel-content" id="panelContent">
+          <!-- Project tree injected by JS -->
+        </div>
+      </aside>
+
+      <!-- Editor area -->
+      <main class="editor-area">
+        <div class="tabs" id="tabs"></div>
+        <div class="breadcrumbs" id="breadcrumbs">
+          <span>dubrounik.resume</span> › <span>app</span> › <span class="bc-active">dubrounik.resume.rb</span>
+        </div>
+        <div class="editor-wrap">
+          <div class="gutter" id="gutter"></div>
+          <div class="editor" id="editor"></div>
+          <div class="minimap" id="minimap" aria-hidden="true"></div>
+        </div>
+        <div class="inline-hint" id="inlineHint"></div>
+      </main>
+    </div>
+
+    <!-- Bottom tool window -->
+    <div class="tool-window" id="toolWindow">
+      <div class="tw-tabs">
+        <button class="tw-tab active" data-tw="terminal" data-i18n="tw.terminal">Terminal</button>
+        <button class="tw-tab" data-tw="run" data-i18n="tw.run">Run</button>
+        <button class="tw-tab" data-tw="problems" data-i18n="tw.problems">Problems</button>
+        <button class="tw-tab" data-tw="git-log" data-i18n="tw.gitLog">Git Log</button>
+        <button class="tw-tab" data-tw="services" data-i18n="tw.services">Services</button>
+      </div>
+      <div class="tw-content">
+        <div class="tw-pane active" id="tw-terminal">
+          <div class="terminal-output" id="terminalOutput"></div>
+          <div class="terminal-input-line">
+            <span class="prompt">➜</span>
+            <span class="cwd">~/dubrounik.resume</span>
+            <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal input">
+          </div>
+        </div>
+        <div class="tw-pane" id="tw-run"></div>
+        <div class="tw-pane" id="tw-problems"></div>
+        <div class="tw-pane" id="tw-git-log"></div>
+        <div class="tw-pane" id="tw-services"></div>
+      </div>
+      <button class="tw-resize" id="twResize" aria-label="Resize panel"></button>
+    </div>
+
+    <!-- Status bar -->
+    <footer class="statusbar">
+      <span class="sb-item" id="sbBranch">⎇ main</span>
+      <span class="sb-item sb-clickable" id="sbProblems" data-i18n="status.problems">✓ 0 errors, 0 warnings, 8+ years exp</span>
+      <span class="sb-spacer"></span>
+      <span class="sb-item" id="sbPos">Ln 1, Col 1</span>
+      <span class="sb-item">UTF-8</span>
+      <span class="sb-item">Ruby 3.3</span>
+      <span class="sb-item">Rails 8</span>
+      <span class="sb-item sb-ruby" data-i18n="status.ruby">♦ Rubyroid at heart</span>
+    </footer>
+  </div>
+
+  <!-- Command palette -->
+  <div class="overlay hidden" id="paletteOverlay">
+    <div class="palette">
+      <input type="text" id="paletteInput" placeholder="Search Everywhere…" data-i18n-placeholder="palette.placeholder" autocomplete="off">
+      <ul class="palette-results" id="paletteResults"></ul>
+    </div>
+  </div>
+
+  <!-- Find in path -->
+  <div class="overlay hidden" id="searchOverlay">
+    <div class="search-modal">
+      <h3 data-i18n="search.title">Find in Path</h3>
+      <input type="text" id="searchInput" placeholder="Search skills, projects…" data-i18n-placeholder="search.placeholder" autocomplete="off">
+      <ul class="search-results" id="searchResults"></ul>
+    </div>
+  </div>
+
+  <!-- Contact modal -->
+  <div class="overlay hidden" id="contactOverlay">
+    <div class="contact-modal">
+      <button class="modal-close" data-close="contact">×</button>
+      <h2 data-i18n="contact.title">bundle exec dubrounik --hire</h2>
+      <p class="contact-sub" data-i18n="contact.sub">Deployment successful. Let's connect.</p>
+      <div class="contact-grid">
+        <a href="https://linkedin.com/in/artsiom-dubrounik-813750146" target="_blank" rel="noopener" class="contact-link">
+          <span class="cl-icon">in</span>
+          <span>LinkedIn</span>
+        </a>
+        <a href="https://github.com/fooooxmr" target="_blank" rel="noopener" class="contact-link">
+          <span class="cl-icon">gh</span>
+          <span>GitHub</span>
+        </a>
+        <a href="mailto:artsiom.dubrounik@gmail.com" class="contact-link">
+          <span class="cl-icon">@</span>
+          <span>artsiom.dubrounik@gmail.com</span>
+        </a>
+        <div class="contact-link location">
+          <span class="cl-icon">📍</span>
+          <span data-i18n="contact.location">Grodno, Belarus · Remote worldwide</span>
+        </div>
+      </div>
+      <p class="contact-easter" data-i18n="contact.easter">You found the hidden breakpoint. Nice debugging skills.</p>
+    </div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip hidden" id="tooltip" role="tooltip"></div>
+
+  <!-- Mobile nav -->
+  <nav class="mobile-nav" id="mobileNav">
+    <button data-mobile="editor" class="active">Code</button>
+    <button data-mobile="project">Files</button>
+    <button data-mobile="terminal">Terminal</button>
+    <button data-mobile="contact">Hire</button>
+  </nav>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
