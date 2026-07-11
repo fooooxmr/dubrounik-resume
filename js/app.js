@@ -5,7 +5,7 @@
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
   const state = {
-    lang: localStorage.getItem('resume-lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en'),
+    lang: localStorage.getItem('resume-lang') || 'en',
     activeFile: 'resume',
     activePanel: 'project',
     openTabs: ['resume'],
