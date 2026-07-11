@@ -2,8 +2,74 @@ const I18N = {
   en: {
     splash: { tagline: 'Indexing dubrounik.resume.rb…', hint: 'Press any key to skip indexing' },
     menu: { file: 'File', edit: 'Edit', view: 'View', navigate: 'Navigate', code: 'Code', refactor: 'Refactor', run: 'Run', tools: 'Tools', git: 'Git', help: 'Help' },
+    menuItems: {
+      file: [
+        { label: 'Open README.md', action: 'file:readme', shortcut: '' },
+        { label: 'Open Gemfile', action: 'file:gemfile', shortcut: '' },
+        { label: 'Open dubrounik.resume.rb', action: 'file:resume', shortcut: '⌘1' },
+        { label: 'Open Profile Photo', action: 'photo', shortcut: '' },
+        { label: 'Export Contact', action: 'contact', shortcut: '' },
+        { label: 'Close Active Tab', action: 'close-tab', shortcut: '⌘W' }
+      ],
+      edit: [
+        { label: 'Copy Email', action: 'copy-email', shortcut: '' },
+        { label: 'Find in Path', action: 'search', shortcut: '⌘⇧F' },
+        { label: 'Search Everywhere', action: 'palette', shortcut: '⇧⇧' },
+        { label: 'Toggle Language EN/RU', action: 'lang', shortcut: '⌘L' }
+      ],
+      view: [
+        { label: 'Project Panel', action: 'panel:project', shortcut: '⌘1' },
+        { label: 'Structure Panel', action: 'panel:structure', shortcut: '⌘7' },
+        { label: 'Git Log Panel', action: 'panel:git', shortcut: '' },
+        { label: 'Terminal', action: 'terminal', shortcut: '⌃`' },
+        { label: 'Toggle Minimap', action: 'minimap', shortcut: '' },
+        { label: 'Toggle Tool Window', action: 'toolwindow', shortcut: '' }
+      ],
+      navigate: [
+        { label: 'Go to File…', action: 'palette', shortcut: '⌘⇧O' },
+        { label: 'Go to Symbol…', action: 'panel:structure', shortcut: '⌘⌥O' },
+        { label: 'Go to Projects', action: 'file:projects', shortcut: '' },
+        { label: 'Go to Experience', action: 'file:experience', shortcut: '' },
+        { label: 'Recent: Avallain', action: 'file:p_avallain', shortcut: '' }
+      ],
+      code: [
+        { label: 'Go to Declaration', action: 'goto-decl', shortcut: '⌘B' },
+        { label: 'Show Quick Documentation', action: 'quick-doc', shortcut: '⌃Q' },
+        { label: 'Reformat Code', action: 'reformat', shortcut: '⌘⌥L' },
+        { label: 'Inspect Stack Trace', action: 'problems', shortcut: '' }
+      ],
+      refactor: [
+        { label: 'Switch Language EN ↔ RU', action: 'lang', shortcut: '⌘L' },
+        { label: 'Rename Tab', action: 'rename-tab', shortcut: '⇧F6' },
+        { label: 'Extract Method (easter egg)', action: 'extract', shortcut: '' }
+      ],
+      run: [
+        { label: 'Run dubrounik.resume.rb', action: 'run', shortcut: '⌃R' },
+        { label: 'Debug (breakpoint)', action: 'debug', shortcut: '⌃D' },
+        { label: 'Run Specs', action: 'run', shortcut: '' },
+        { label: 'Start IRB Console', action: 'irb', shortcut: '' }
+      ],
+      tools: [
+        { label: 'IRB Console', action: 'irb', shortcut: '' },
+        { label: 'Services Dashboard', action: 'services', shortcut: '' },
+        { label: 'Database Console (Skills)', action: 'file:skills', shortcut: '' },
+        { label: 'Problems', action: 'problems', shortcut: '' }
+      ],
+      git: [
+        { label: 'Show Git Log', action: 'gitlog', shortcut: '' },
+        { label: 'Annotate (Blame)', action: 'blame', shortcut: '' },
+        { label: 'Version Control Panel', action: 'panel:git', shortcut: '' }
+      ],
+      help: [
+        { label: 'Terminal Commands', action: 'term-help', shortcut: '' },
+        { label: 'Keyboard Shortcuts', action: 'shortcuts', shortcut: '' },
+        { label: 'About dubrounik.resume', action: 'about', shortcut: '' },
+        { label: 'Hire Me 💎', action: 'contact', shortcut: '' }
+      ]
+    },
     toolbar: { run: 'Run', debug: 'Debug', config: 'dubrounik.resume.rb' },
     panel: { project: 'Project', git: 'Version Control', structure: 'Structure', terminal: 'Terminal', contact: 'Hire Me' },
+    structure: { empty: 'No symbols in file', title: 'Structure' },
     tw: { terminal: 'Terminal', run: 'Run', problems: 'Problems', gitLog: 'Git Log', services: 'Services' },
     status: { problems: '✓ 0 errors, 0 warnings, 8+ years exp', ruby: '♦ Rubyroid at heart' },
     palette: { placeholder: 'Search Everywhere…' },
@@ -15,40 +81,42 @@ const I18N = {
       easter: 'You found the hidden breakpoint. Nice debugging skills.'
     },
     terminal: {
-      welcome: 'Welcome to dubrounik.resume terminal v1.0',
-      help: 'Available commands: help, whoami, skills, projects, experience, education, hobbies, run, debug, hire, clear, lang',
+      welcome: 'Welcome to dubrounik.resume terminal v2.0 — type `irb` for Ruby console',
+      help: 'Commands: help, whoami, skills, projects, experience, education, irb, run, debug, hire, clear, lang, ls',
       whoami: 'Artsiom Dubrounik — Senior Software Engineer, 8+ years Ruby/Rails',
-      skills: 'Ruby, Rails, React, AWS, Docker, K8s, PostgreSQL, Redis, Sidekiq, SQS, Auth0, SAML, Microservices, AI tooling',
+      skills: 'Ruby, Rails, React, AWS, Docker, K8s, PostgreSQL, Redis, Sidekiq, SQS, Auth0, SAML, Microservices, AI',
       education: 'Yanka Kupala State University of Grodno — Software Development (2014–2018)',
       hobbies: 'Teaching, Psychology, mentoring via pair programming',
       run: 'Running dubrounik.resume.rb…\n✓ All specs passed. Ready for production hire.',
       debug: 'Breakpoint hit at ContactController#hire — opening contact modal…',
       hire: 'Opening contact channels…',
-      unknown: 'Command not found. Type `help` for available commands.',
+      irb: 'Starting IRB 3.3.0 — type `exit` to return to shell',
+      unknown: 'Command not found. Type `help` or `irb` for Ruby console.',
       cleared: 'Terminal cleared.'
     },
     files: {
       root: 'dubrounik.resume',
       resume: 'dubrounik.resume.rb',
       experience: 'app/models/experience.rb',
+      education: 'app/models/education.rb',
       skills: 'app/services/skills_engine.rb',
       projects: 'app/models/projects.rb',
       contact: 'app/controllers/contact_controller.rb',
       spec: 'spec/achievements_spec.rb',
-      en: 'config/locales/en.yml',
-      ru: 'config/locales/ru.yml',
       readme: 'README.md',
-      gemfile: 'Gemfile'
+      gemfile: 'Gemfile',
+      photo: 'assets/photo.jpg',
+      p_avallain: 'app/models/projects/avallain.rb',
+      p_hoot: 'app/models/projects/hoot_dev.rb',
+      p_loyalty: 'app/models/projects/loyalty_plus.rb',
+      p_listen: 'app/models/projects/listen_loop.rb',
+      p_friends: 'app/models/projects/friendsurance.rb',
+      p_spider: 'app/models/projects/spider_door.rb',
+      p_tracker: 'app/models/projects/tracker.rb',
+      p_ship: 'app/models/projects/ship_hawk.rb',
+      p_bahamas: 'app/models/projects/bahamas_vacations.rb'
     },
-    tree: {
-      app: 'app',
-      models: 'models',
-      services: 'services',
-      controllers: 'controllers',
-      config: 'config',
-      locales: 'locales',
-      spec: 'spec'
-    },
+    tree: { app: 'app', models: 'models', projects: 'projects', services: 'services', controllers: 'controllers', config: 'config', locales: 'locales', spec: 'spec', assets: 'assets' },
     run: {
       title: 'Running spec/achievements_spec.rb…',
       lines: [
@@ -58,7 +126,7 @@ const I18N = {
         { status: 'pass', text: 'ListenLoop monolith→Go lambdas & Auth0/Okta redesign' },
         { status: 'pass', text: 'Friendsurance SQS→Sidekiq migration cut ops costs' },
         { status: 'pass', text: 'AI-driven development workflow & team mentoring' },
-        { status: 'pass', text: '8 examples, 0 failures' }
+        { status: 'pass', text: '9 examples, 0 failures' }
       ]
     },
     problems: [
@@ -76,9 +144,13 @@ const I18N = {
     ],
     paletteItems: [
       { label: 'Go to dubrounik.resume.rb', action: 'file:resume' },
+      { label: 'Go to README.md', action: 'file:readme' },
+      { label: 'Go to Gemfile', action: 'file:gemfile' },
       { label: 'Go to Experience', action: 'file:experience' },
-      { label: 'Go to Projects', action: 'file:projects' },
+      { label: 'Go to Projects registry', action: 'file:projects' },
+      { label: 'Go to Avallain project', action: 'file:p_avallain' },
       { label: 'Go to Skills', action: 'file:skills' },
+      { label: 'Start IRB Console', action: 'irb' },
       { label: 'Run Resume', action: 'run', shortcut: '⌃R' },
       { label: 'Debug / Contact', action: 'contact', shortcut: '⌃D' },
       { label: 'Find in Path', action: 'search', shortcut: '⌘⇧F' },
@@ -96,15 +168,84 @@ const I18N = {
     ],
     tooltip: {
       class: 'Senior Software Engineer with 8+ years in Ruby/Rails. Team lead, mentor, AI-augmented developer.',
-      method: 'Click to inspect implementation details',
-      project: 'Major project — click Run to see achievements'
-    }
+      method: 'Click to inspect — or type in IRB: Dubrounik.new.method_name',
+      project: 'Major project — open file for full achievements'
+    },
+    about: 'dubrounik.resume v2.0 — Interactive RubyMine-styled portfolio.\nBuilt by Artsiom Dubrounik.\nType `irb` in terminal. Double-Shift for Search Everywhere.',
+    shortcuts: '⌃R Run · ⌃D Debug · ⌘L Language · ⌘⇧F Find · ⇧⇧ Search Everywhere · ⌘B Go to Declaration',
+    blame: 'Line 1: Artsiom Dubrounik <artsiom.dubrounik@gmail.com> 2016\nEvery line: pair-programmed with excellence.'
   },
   ru: {
     splash: { tagline: 'Индексация dubrounik.resume.rb…', hint: 'Нажмите любую клавишу, чтобы пропустить' },
     menu: { file: 'Файл', edit: 'Правка', view: 'Вид', navigate: 'Навигация', code: 'Код', refactor: 'Рефакторинг', run: 'Запуск', tools: 'Инструменты', git: 'Git', help: 'Справка' },
+    menuItems: {
+      file: [
+        { label: 'Открыть README.md', action: 'file:readme', shortcut: '' },
+        { label: 'Открыть Gemfile', action: 'file:gemfile', shortcut: '' },
+        { label: 'Открыть dubrounik.resume.rb', action: 'file:resume', shortcut: '⌘1' },
+        { label: 'Открыть фото профиля', action: 'photo', shortcut: '' },
+        { label: 'Экспорт контактов', action: 'contact', shortcut: '' },
+        { label: 'Закрыть вкладку', action: 'close-tab', shortcut: '⌘W' }
+      ],
+      edit: [
+        { label: 'Копировать email', action: 'copy-email', shortcut: '' },
+        { label: 'Найти в пути', action: 'search', shortcut: '⌘⇧F' },
+        { label: 'Поиск везде', action: 'palette', shortcut: '⇧⇧' },
+        { label: 'Сменить язык EN/RU', action: 'lang', shortcut: '⌘L' }
+      ],
+      view: [
+        { label: 'Панель проекта', action: 'panel:project', shortcut: '⌘1' },
+        { label: 'Панель структуры', action: 'panel:structure', shortcut: '⌘7' },
+        { label: 'Панель Git', action: 'panel:git', shortcut: '' },
+        { label: 'Терминал', action: 'terminal', shortcut: '⌃`' },
+        { label: 'Миникарта', action: 'minimap', shortcut: '' },
+        { label: 'Tool Window', action: 'toolwindow', shortcut: '' }
+      ],
+      navigate: [
+        { label: 'Перейти к файлу…', action: 'palette', shortcut: '⌘⇧O' },
+        { label: 'Перейти к символу…', action: 'panel:structure', shortcut: '⌘⌥O' },
+        { label: 'К проектам', action: 'file:projects', shortcut: '' },
+        { label: 'К опыту', action: 'file:experience', shortcut: '' },
+        { label: 'Недавний: Avallain', action: 'file:p_avallain', shortcut: '' }
+      ],
+      code: [
+        { label: 'Перейти к объявлению', action: 'goto-decl', shortcut: '⌘B' },
+        { label: 'Быстрая документация', action: 'quick-doc', shortcut: '⌃Q' },
+        { label: 'Форматировать код', action: 'reformat', shortcut: '⌘⌥L' },
+        { label: 'Стек вызовов', action: 'problems', shortcut: '' }
+      ],
+      refactor: [
+        { label: 'Сменить язык EN ↔ RU', action: 'lang', shortcut: '⌘L' },
+        { label: 'Переименовать вкладку', action: 'rename-tab', shortcut: '⇧F6' },
+        { label: 'Extract Method (пасхалка)', action: 'extract', shortcut: '' }
+      ],
+      run: [
+        { label: 'Запустить dubrounik.resume.rb', action: 'run', shortcut: '⌃R' },
+        { label: 'Отладка (breakpoint)', action: 'debug', shortcut: '⌃D' },
+        { label: 'Запустить тесты', action: 'run', shortcut: '' },
+        { label: 'Запустить IRB', action: 'irb', shortcut: '' }
+      ],
+      tools: [
+        { label: 'IRB консоль', action: 'irb', shortcut: '' },
+        { label: 'Сервисы', action: 'services', shortcut: '' },
+        { label: 'Database Console (Skills)', action: 'file:skills', shortcut: '' },
+        { label: 'Проблемы', action: 'problems', shortcut: '' }
+      ],
+      git: [
+        { label: 'Git Log', action: 'gitlog', shortcut: '' },
+        { label: 'Annotate (Blame)', action: 'blame', shortcut: '' },
+        { label: 'Панель контроля версий', action: 'panel:git', shortcut: '' }
+      ],
+      help: [
+        { label: 'Команды терминала', action: 'term-help', shortcut: '' },
+        { label: 'Горячие клавиши', action: 'shortcuts', shortcut: '' },
+        { label: 'О dubrounik.resume', action: 'about', shortcut: '' },
+        { label: 'Нанять 💎', action: 'contact', shortcut: '' }
+      ]
+    },
     toolbar: { run: 'Запуск', debug: 'Отладка', config: 'dubrounik.resume.rb' },
     panel: { project: 'Проект', git: 'Контроль версий', structure: 'Структура', terminal: 'Терминал', contact: 'Нанять' },
+    structure: { empty: 'Нет символов в файле', title: 'Структура' },
     tw: { terminal: 'Терминал', run: 'Запуск', problems: 'Проблемы', gitLog: 'Git Log', services: 'Сервисы' },
     status: { problems: '✓ 0 ошибок, 0 предупреждений, 8+ лет опыта', ruby: '♦ Rubyroid в душе' },
     palette: { placeholder: 'Поиск везде…' },
@@ -116,8 +257,8 @@ const I18N = {
       easter: 'Вы нашли скрытую точку останова. Отличные навыки отладки.'
     },
     terminal: {
-      welcome: 'Добро пожаловать в терминал dubrounik.resume v1.0',
-      help: 'Команды: help, whoami, skills, projects, experience, education, hobbies, run, debug, hire, clear, lang',
+      welcome: 'Терминал dubrounik.resume v2.0 — введите `irb` для Ruby-консоли',
+      help: 'Команды: help, whoami, skills, projects, experience, education, irb, run, debug, hire, clear, lang, ls',
       whoami: 'Артём Дубровник — Senior Software Engineer, 8+ лет Ruby/Rails',
       skills: 'Ruby, Rails, React, AWS, Docker, K8s, PostgreSQL, Redis, Sidekiq, SQS, Auth0, SAML, микросервисы, AI',
       education: 'ГрГУ им. Янки Купалы — Разработка ПО (2014–2018)',
@@ -125,31 +266,33 @@ const I18N = {
       run: 'Запуск dubrounik.resume.rb…\n✓ Все тесты пройдены. Готов к продакшену.',
       debug: 'Точка останова в ContactController#hire — открываю контакты…',
       hire: 'Открываю каналы связи…',
-      unknown: 'Команда не найдена. Введите `help` для списка команд.',
+      irb: 'Запуск IRB 3.3.0 — `exit` для возврата в shell',
+      unknown: 'Команда не найдена. Введите `help` или `irb`.',
       cleared: 'Терминал очищен.'
     },
     files: {
       root: 'dubrounik.resume',
       resume: 'dubrounik.resume.rb',
       experience: 'app/models/experience.rb',
+      education: 'app/models/education.rb',
       skills: 'app/services/skills_engine.rb',
       projects: 'app/models/projects.rb',
       contact: 'app/controllers/contact_controller.rb',
       spec: 'spec/achievements_spec.rb',
-      en: 'config/locales/en.yml',
-      ru: 'config/locales/ru.yml',
       readme: 'README.md',
-      gemfile: 'Gemfile'
+      gemfile: 'Gemfile',
+      photo: 'assets/photo.jpg',
+      p_avallain: 'app/models/projects/avallain.rb',
+      p_hoot: 'app/models/projects/hoot_dev.rb',
+      p_loyalty: 'app/models/projects/loyalty_plus.rb',
+      p_listen: 'app/models/projects/listen_loop.rb',
+      p_friends: 'app/models/projects/friendsurance.rb',
+      p_spider: 'app/models/projects/spider_door.rb',
+      p_tracker: 'app/models/projects/tracker.rb',
+      p_ship: 'app/models/projects/ship_hawk.rb',
+      p_bahamas: 'app/models/projects/bahamas_vacations.rb'
     },
-    tree: {
-      app: 'app',
-      models: 'models',
-      services: 'services',
-      controllers: 'controllers',
-      config: 'config',
-      locales: 'locales',
-      spec: 'spec'
-    },
+    tree: { app: 'app', models: 'models', projects: 'projects', services: 'services', controllers: 'controllers', config: 'config', locales: 'locales', spec: 'spec', assets: 'assets' },
     run: {
       title: 'Запуск spec/achievements_spec.rb…',
       lines: [
@@ -159,7 +302,7 @@ const I18N = {
         { status: 'pass', text: 'ListenLoop: монолит→Go lambdas, Auth0/Okta' },
         { status: 'pass', text: 'Friendsurance: SQS→Sidekiq, снижение затрат' },
         { status: 'pass', text: 'AI-разработка и менторинг команд' },
-        { status: 'pass', text: '8 примеров, 0 ошибок' }
+        { status: 'pass', text: '9 примеров, 0 ошибок' }
       ]
     },
     problems: [
@@ -177,9 +320,13 @@ const I18N = {
     ],
     paletteItems: [
       { label: 'Перейти к dubrounik.resume.rb', action: 'file:resume' },
+      { label: 'Перейти к README.md', action: 'file:readme' },
+      { label: 'Перейти к Gemfile', action: 'file:gemfile' },
       { label: 'Перейти к Experience', action: 'file:experience' },
-      { label: 'Перейти к Projects', action: 'file:projects' },
+      { label: 'Реестр проектов', action: 'file:projects' },
+      { label: 'Проект Avallain', action: 'file:p_avallain' },
       { label: 'Перейти к Skills', action: 'file:skills' },
+      { label: 'Запустить IRB', action: 'irb' },
       { label: 'Запустить резюме', action: 'run', shortcut: '⌃R' },
       { label: 'Отладка / Контакты', action: 'contact', shortcut: '⌃D' },
       { label: 'Найти в пути', action: 'search', shortcut: '⌘⇧F' },
@@ -197,341 +344,11 @@ const I18N = {
     ],
     tooltip: {
       class: 'Senior Software Engineer, 8+ лет Ruby/Rails. Тимлид, ментор, AI-разработчик.',
-      method: 'Кликните для просмотра деталей реализации',
-      project: 'Крупный проект — нажмите Run для достижений'
-    }
+      method: 'Кликните или в IRB: Dubrounik.new.method_name',
+      project: 'Крупный проект — откройте файл для полного описания'
+    },
+    about: 'dubrounik.resume v2.0 — интерактивное резюме в стиле RubyMine.\nАртём Дубровник.\n`irb` в терминале. Двойной Shift — поиск везде.',
+    shortcuts: '⌃R Запуск · ⌃D Отладка · ⌘L Язык · ⌘⇧F Поиск · ⇧⇧ Search Everywhere · ⌘B К объявлению',
+    blame: 'Строка 1: Артём Дубровник <artsiom.dubrounik@gmail.com> 2016\nКаждая строка: pair programming с excellence.'
   }
 };
-
-const CODE_FILES = {
-  resume: {
-    en: [
-      { t: 'cmt', s: '# dubrounik.resume.rb' },
-      { t: 'cmt', s: '# Senior Software Engineer · 8+ years · Grodno, Belarus' },
-      { t: 'cmt', s: '# "Code is poetry. Ruby is the language of it."' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>Dubrounik</cls> < <cls>ApplicationRecord</cls>' },
-      { t: 'code', s: '  <ann># @author</ann> <str>"Artsiom Dubrounik"</str>' },
-      { t: 'code', s: '  <ann># @role</ann>    <str>"Senior Software Engineer"</str>' },
-      { t: 'code', s: '  <ann># @since</ann>   <num>2016</num>' },
-      { t: 'code', s: '  <ann># @stack</ann>   <sym>%i</sym>[<r1>:ruby</r1>, <r2>:rails</r2>, <r3>:react</r3>, <r4>:aws</r4>]' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>about_me</mth>' },
-      { t: 'code', s: '    <str><<~BIO</str>' },
-      { t: 'code', s: '      Software engineer with 8+ years across the full SDLC.' },
-      { t: 'code', s: '      OO design, implementation, testing, deployment, support.' },
-      { t: 'code', s: '      Agile/XP practitioner. Mentor. AI-augmented developer.' },
-      { t: 'code', s: '      Team lead at iTechArt. Founder of The Lessoner.' },
-      { t: 'code', s: '      Education mentor at IT Academy Grodno.' },
-      { t: 'code', s: '    <str>BIO</str>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>core_competencies</mth>' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      languages: <sym>%i</sym>[<r1>ruby</r1> <r2>javascript</r2> <r3>java</r3> <r4>html_scss</r4>],' },
-      { t: 'code', s: '      frameworks:  <sym>%i</sym>[<r1>rails</r1> <r2>react</r2> <r3>rspec</r3> <r4>cucumber</r4>],' },
-      { t: 'code', s: '      infra:       <sym>%i</sym>[<r1>aws</r1> <r2>docker</r2> <r3>kubernetes</r3> <r4>heroku</r4>],' },
-      { t: 'code', s: '      data:        <sym>%i</sym>[<r1>postgresql</r1> <r2>mysql</r2> <r3>redis</r3> <r4>redshift</r4>],' },
-      { t: 'code', s: '      messaging:   <sym>%i</sym>[<r1>sidekiq</r1> <r2>sqs</r2> <r3>shoryuken</r3> <r4>rabbitmq</r4>],' },
-      { t: 'code', s: '      auth:        <sym>%i</sym>[<r1>saml</r1> <r2>auth0</r2> <r3>okta</r3> <r4>ldap</r4>],' },
-      { t: 'code', s: '      ai:          <sym>%i</sym>[<r1>copilot</r1> <r2>cursor</r2> <r3>codegen</r3>]' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>current_positions</mth>' },
-      { t: 'code', s: '    <sym>[</sym>' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Team Manager"</str>, <str>"iTechArt Group"</str>, <kw>since:</kw> <num>2018</num>),' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Education Mentor"</str>, <str>"IT Academy"</str>, <kw>since:</kw> <num>2021</num>),' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Company Owner"</str>, <str>"The Lessoner"</str>, <kw>since:</kw> <num>2022</num>)' },
-      { t: 'code', s: '    <sym>]</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>hire!</mth>  <cmt># ← set breakpoint here</cmt>' },
-      { t: 'code', s: '    <cls>ContactController</cls>.<mth>reach_out</mth>(<str>"artsiom.dubrounik@gmail.com"</str>)' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# dubrounik.resume.rb' },
-      { t: 'cmt', s: '# Senior Software Engineer · 8+ лет · Гродно, Беларусь' },
-      { t: 'cmt', s: '# «Код — это поэзия. Ruby — её язык.»' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>Дубровник</cls> < <cls>ApplicationRecord</cls>' },
-      { t: 'code', s: '  <ann># @автор</ann>  <str>"Артём Дубровник"</str>' },
-      { t: 'code', s: '  <ann># @роль</ann>   <str>"Senior Software Engineer"</str>' },
-      { t: 'code', s: '  <ann># @с</ann>      <num>2016</num>' },
-      { t: 'code', s: '  <ann># @стек</ann>   <sym>%i</sym>[<r1>:ruby</r1>, <r2>:rails</r2>, <r3>:react</r3>, <r4>:aws</r4>]' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>о_себе</mth>' },
-      { t: 'code', s: '    <str><<~BIO</str>' },
-      { t: 'code', s: '      Инженер с 8+ годами опыта во всём цикле разработки.' },
-      { t: 'code', s: '      ООП, проектирование, тестирование, деплой, поддержка.' },
-      { t: 'code', s: '      Agile/XP. Ментор. AI-разработчик.' },
-      { t: 'code', s: '      Team Manager в iTechArt. Основатель The Lessoner.' },
-      { t: 'code', s: '      Ментор в IT Academy Гродно.' },
-      { t: 'code', s: '    <str>BIO</str>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>ключевые_компетенции</mth>' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      языки:      <sym>%i</sym>[<r1>ruby</r1> <r2>javascript</r2> <r3>java</r3> <r4>html_scss</r4>],' },
-      { t: 'code', s: '      фреймворки: <sym>%i</sym>[<r1>rails</r1> <r2>react</r2> <r3>rspec</r3> <r4>cucumber</r4>],' },
-      { t: 'code', s: '      инфра:      <sym>%i</sym>[<r1>aws</r1> <r2>docker</r2> <r3>kubernetes</r3> <r4>heroku</r4>],' },
-      { t: 'code', s: '      данные:     <sym>%i</sym>[<r1>postgresql</r1> <r2>mysql</r2> <r3>redis</r3> <r4>redshift</r4>],' },
-      { t: 'code', s: '      очереди:    <sym>%i</sym>[<r1>sidekiq</r1> <r2>sqs</r2> <r3>shoryuken</r3> <r4>rabbitmq</r4>],' },
-      { t: 'code', s: '      auth:       <sym>%i</sym>[<r1>saml</r1> <r2>auth0</r2> <r3>okta</r3> <r4>ldap</r4>],' },
-      { t: 'code', s: '      ai:         <sym>%i</sym>[<r1>copilot</r1> <r2>cursor</r2> <r3>codegen</r3>]' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>текущие_позиции</mth>' },
-      { t: 'code', s: '    <sym>[</sym>' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Team Manager"</str>, <str>"iTechArt Group"</str>, <kw>с:</kw> <num>2018</num>),' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Ментор"</str>, <str>"IT Academy"</str>, <kw>с:</kw> <num>2021</num>),' },
-      { t: 'code', s: '      <cls>Position</cls>.<mth>new</mth>(<str>"Основатель"</str>, <str>"The Lessoner"</str>, <kw>с:</kw> <num>2022</num>)' },
-      { t: 'code', s: '    <sym>]</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>нанять!</mth>  <cmt># ← точка останова</cmt>' },
-      { t: 'code', s: '    <cls>ContactController</cls>.<mth>связаться</mth>(<str>"artsiom.dubrounik@gmail.com"</str>)' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  },
-  experience: {
-    en: [
-      { t: 'cmt', s: '# app/models/experience.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>module</kw> <cls>Experience</cls>' },
-      { t: 'code', s: '  ROLES = <sym>[</sym>' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Team Manager"</str>, company: <str>"iTechArt Group"</str>, period: <str>"2018–present"</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Education Mentor"</str>, company: <str>"IT Academy Grodno"</str>, period: <str>"2021–present"</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Company Owner"</str>, company: <str>"The Lessoner"</str>, period: <str>"2022–present"</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Senior Ruby Developer"</str>, company: <str>"Anadea"</str>, period: <str>"2018"</str> <sym>}</sym>' },
-      { t: 'code', s: '  <sym>]</sym>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.total_years</mth>' },
-      { t: 'code', s: '    <num>8</num>.<mth>years</mth> + <num>2</num>.<mth>months</mth>  <cmt># and counting</cmt>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.highlights</mth>' },
-      { t: 'code', s: '    <sym>[</sym>' },
-      { t: 'code', s: '      <str>"Led technical growth of engineering teams"</str>,' },
-      { t: 'code', s: '      <str>"Mentoring through pair programming"</str>,' },
-      { t: 'code', s: '      <str>"AI-driven code generation & workflow optimization"</str>,' },
-      { t: 'code', s: '      <str>"Architecture decisions for 9+ enterprise projects"</str>,' },
-      { t: 'code', s: '      <str>"Founded nonprofit IT education initiative"</str>' },
-      { t: 'code', s: '    <sym>]</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# app/models/experience.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>module</kw> <cls>Experience</cls>' },
-      { t: 'code', s: '  ROLES = <sym>[</sym>' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Team Manager"</str>, company: <str>"iTechArt Group"</str>, period: <str>"2018–н.в."</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Ментор"</str>, company: <str>"IT Academy Гродно"</str>, period: <str>"2021–н.в."</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Основатель"</str>, company: <str>"The Lessoner"</str>, period: <str>"2022–н.в."</str> <sym>}</sym>,' },
-      { t: 'code', s: '    <sym>{</sym> title: <str>"Ruby Developer"</str>, company: <str>"Anadea"</str>, period: <str>"2018"</str> <sym>}</sym>' },
-      { t: 'code', s: '  <sym>]</sym>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.total_years</mth>' },
-      { t: 'code', s: '    <num>8</num>.<mth>years</mth> + <num>2</num>.<mth>months</mth>  <cmt># и дальше растёт</cmt>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.highlights</mth>' },
-      { t: 'code', s: '    <sym>[</sym>' },
-      { t: 'code', s: '      <str>"Технический рост инженерных команд"</str>,' },
-      { t: 'code', s: '      <str>"Менторинг через pair programming"</str>,' },
-      { t: 'code', s: '      <str>"AI-генерация кода и оптимизация процессов"</str>,' },
-      { t: 'code', s: '      <str>"Архитектурные решения для 9+ enterprise-проектов"</str>,' },
-      { t: 'code', s: '      <str>"Основал некоммерческий IT-образовательный проект"</str>' },
-      { t: 'code', s: '    <sym>]</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  },
-  projects: {
-    en: [
-      { t: 'cmt', s: '# app/models/projects.rb — 9 major projects' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>Projects</cls> < <cls>ApplicationRecord</cls>' },
-      { t: 'code', s: '  DATA = <sym>[</sym>' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Avallain"</str>, <sym>%i</sym>[rails react sqs saml oneroster], <str>"eLearning platform, millions of users"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"hoot.dev"</str>, <sym>%i</sym>[rails react heroku postgres], <str>"Medical expert matching, DICOM viewer"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"LoyaltyPlus"</str>, <sym>%i</sym>[rails k8s aws microservices], <str>"SaaS loyalty platform, Rails 3→6"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"ListenLoop"</str>, <sym>%i</sym>[rails react auth0 k8s ai], <str>"B2B ABM, monolith→Go lambdas"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Friendsurance"</str>, <sym>%i</sym>[rails react elasticsearch ocr], <str>"Digital insurance broker, 150K customers"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"SpiderDoor"</str>, <sym>%i</sym>[rails twilio mobile_api], <str>"Self-storage management software"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Tracker"</str>, <sym>%i</sym>[rails agile pm], <str>"Agile project management @ Anadea"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"ShipHawk"</str>, <sym>%i</sym>[rails react elasticsearch], <str>"Shipping automation software"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Bahamas Vacations"</str>, <sym>%i</sym>[rails booking api], <str>"Travel booking platform"</str>)' },
-      { t: 'code', s: '  <sym>]</sym>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# app/models/projects.rb — 9 крупных проектов' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>Projects</cls> < <cls>ApplicationRecord</cls>' },
-      { t: 'code', s: '  DATA = <sym>[</sym>' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Avallain"</str>, <sym>%i</sym>[rails react sqs saml oneroster], <str>"eLearning, миллионы пользователей"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"hoot.dev"</str>, <sym>%i</sym>[rails react heroku postgres], <str>"Медицинские эксперты, DICOM"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"LoyaltyPlus"</str>, <sym>%i</sym>[rails k8s aws microservices], <str>"SaaS лояльность, Rails 3→6"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"ListenLoop"</str>, <sym>%i</sym>[rails react auth0 k8s ai], <str>"B2B ABM, монолит→Go lambdas"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Friendsurance"</str>, <sym>%i</sym>[rails react elasticsearch ocr], <str>"Страховой брокер, 150K клиентов"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"SpiderDoor"</str>, <sym>%i</sym>[rails twilio mobile_api], <str>"Self-storage ПО"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Tracker"</str>, <sym>%i</sym>[rails agile pm], <str>"Agile PM @ Anadea"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"ShipHawk"</str>, <sym>%i</sym>[rails react elasticsearch], <str>"Автоматизация доставки"</str>),' },
-      { t: 'code', s: '    <cls>Project</cls>.<mth>new</mth>(<str>"Bahamas Vacations"</str>, <sym>%i</sym>[rails booking api], <str>"Бронирование путешествий"</str>)' },
-      { t: 'code', s: '  <sym>]</sym>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  },
-  skills: {
-    en: [
-      { t: 'cmt', s: '# app/services/skills_engine.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>SkillsEngine</cls>' },
-      { t: 'code', s: '  LEVELS = <sym>{</sym> expert: <num>5</num>, advanced: <num>4</num>, proficient: <num>3</num> <sym>}</sym>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>evaluate</mth>' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      <str>"Ruby on Rails"</str>  => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Ruby"</str>           => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"PostgreSQL"</str>     => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"React"</str>          => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"AWS"</str>            => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Docker/K8s"</str>     => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Redis/Sidekiq"</str>  => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Microservices"</str>  => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"SAML/Auth0"</str>     => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"RSpec/Cucumber"</str> => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"AI Tooling"</str>     => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Team Leadership"</str>=> <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Mentoring"</str>      => <sym>:expert</sym>' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# app/services/skills_engine.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>SkillsEngine</cls>' },
-      { t: 'code', s: '  LEVELS = <sym>{</sym> expert: <num>5</num>, advanced: <num>4</num>, proficient: <num>3</num> <sym>}</sym>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>evaluate</mth>' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      <str>"Ruby on Rails"</str>  => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Ruby"</str>           => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"PostgreSQL"</str>     => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"React"</str>          => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"AWS"</str>            => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Docker/K8s"</str>     => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Redis/Sidekiq"</str>  => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Микросервисы"</str>   => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"SAML/Auth0"</str>     => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"RSpec/Cucumber"</str> => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"AI-инструменты"</str> => <sym>:advanced</sym>,' },
-      { t: 'code', s: '      <str>"Лидерство"</str>      => <sym>:expert</sym>,' },
-      { t: 'code', s: '      <str>"Менторинг"</str>      => <sym>:expert</sym>' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  },
-  contact: {
-    en: [
-      { t: 'cmt', s: '# app/controllers/contact_controller.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>ContactController</cls> < <cls>ApplicationController</cls>' },
-      { t: 'code', s: '  <kw>def</kw> <mth>hire</mth>' },
-      { t: 'code', s: '    <mth>reach_out</mth> <cmt># you are here</cmt>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.reach_out</mth>(email)' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      email:    <str>"artsiom.dubrounik@gmail.com"</str>,' },
-      { t: 'code', s: '      linkedin: <str>"linkedin.com/in/artsiom-dubrounik-813750146"</str>,' },
-      { t: 'code', s: '      github:   <str>"github.com/fooooxmr"</str>,' },
-      { t: 'code', s: '      location: <str>"Grodno, Belarus — Remote OK"</str>' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# app/controllers/contact_controller.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>class</kw> <cls>ContactController</cls> < <cls>ApplicationController</cls>' },
-      { t: 'code', s: '  <kw>def</kw> <mth>hire</mth>' },
-      { t: 'code', s: '    <mth>reach_out</mth> <cmt># вы здесь</cmt>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'empty' },
-      { t: 'code', s: '  <kw>def</kw> <mth>self.reach_out</mth>(email)' },
-      { t: 'code', s: '    <sym>{</sym>' },
-      { t: 'code', s: '      email:    <str>"artsiom.dubrounik@gmail.com"</str>,' },
-      { t: 'code', s: '      linkedin: <str>"linkedin.com/in/artsiom-dubrounik-813750146"</str>,' },
-      { t: 'code', s: '      github:   <str>"github.com/fooooxmr"</str>,' },
-      { t: 'code', s: '      location: <str>"Гродно, Беларусь — Удалённо"</str>' },
-      { t: 'code', s: '    <sym>}</sym>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  },
-  spec: {
-    en: [
-      { t: 'cmt', s: '# spec/achievements_spec.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>describe</kw> <cls>Dubrounik</cls> <kw>do</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"migrates Sidekiq to SQS and back flawlessly"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>handle_queue_migration</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"implements SSO for millions of learners"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>integrate_saml</mth>(:avallain)' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"fixes memory leaks under pressure"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>profile_and_optimize</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"mentors juniors to excellence"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>pair_program</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ],
-    ru: [
-      { t: 'cmt', s: '# spec/achievements_spec.rb' },
-      { t: 'empty' },
-      { t: 'code', s: '<kw>describe</kw> <cls>Дубровник</cls> <kw>do</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"мигрирует Sidekiq ↔ SQS без потерь"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>handle_queue_migration</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"внедряет SSO для миллионов"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>integrate_saml</mth>(:avallain)' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"чинит утечки памяти под нагрузкой"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>profile_and_optimize</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '  <kw>it</kw> <str>"выводит джунов на excellence"</str> <kw>do</kw>' },
-      { t: 'code', s: '    <mth>expect</mth>(subject).<mth>to</mth> <mth>pair_program</mth>' },
-      { t: 'code', s: '  <kw>end</kw>' },
-      { t: 'code', s: '<kw>end</kw>' }
-    ]
-  }
-};
-
-const SEARCH_INDEX = [
-  { q: 'ruby rails', file: 'resume', line: 5 },
-  { q: 'avallain elearning sso saml oneroster', file: 'projects', line: 4 },
-  { q: 'hoot medical dicom', file: 'projects', line: 5 },
-  { q: 'loyaltyplus kubernetes microservices', file: 'projects', line: 6 },
-  { q: 'listenloop auth0 okta ai', file: 'projects', line: 7 },
-  { q: 'friendsurance elasticsearch ocr insurance', file: 'projects', line: 8 },
-  { q: 'postgresql redis sidekiq sqs', file: 'skills', line: 8 },
-  { q: 'mentoring teaching pair programming', file: 'experience', line: 14 },
-  { q: 'itechart team manager', file: 'experience', line: 4 },
-  { q: 'the lessoner education', file: 'experience', line: 6 },
-  { q: 'aws docker kubernetes', file: 'skills', line: 10 },
-  { q: 'react javascript frontend', file: 'skills', line: 9 },
-  { q: 'ai copilot cursor codegen', file: 'resume', line: 24 },
-  { q: 'rspec cucumber testing', file: 'skills', line: 14 },
-  { q: 'contact hire email linkedin', file: 'contact', line: 8 }
-];
