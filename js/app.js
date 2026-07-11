@@ -747,14 +747,19 @@
   }
 
   function init() {
-    applyI18n();
-    renderTabs();
-    renderEditor('resume');
-    renderProjectTree();
-    initToolWindows();
-    updateTerminalPrompt();
     initSplash();
-    initEvents();
+    try {
+      applyI18n();
+      renderTabs();
+      renderEditor('resume');
+      renderProjectTree();
+      initToolWindows();
+      updateTerminalPrompt();
+      initEvents();
+    } catch (err) {
+      console.error('dubrounik.resume init error:', err);
+      dismissSplash();
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
