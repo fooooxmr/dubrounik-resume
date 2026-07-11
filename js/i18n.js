@@ -81,8 +81,8 @@ const I18N = {
       easter: 'You found the hidden breakpoint. Nice debugging skills.'
     },
     terminal: {
-      welcome: 'Welcome to dubrounik.resume terminal v2.0 — type `irb` for Ruby console',
-      help: 'Commands: help, whoami, skills, projects, experience, education, irb, run, debug, hire, clear, lang, ls',
+      welcome: 'Welcome to dubrounik.resume terminal v1.0',
+      help: 'Available commands: help, whoami, skills, projects, experience, education, hobbies, run, debug, hire, clear, lang, ls, irb',
       whoami: 'Artsiom Dubrounik — Senior Software Engineer, 8+ years Ruby/Rails',
       skills: 'Ruby, Rails, React, AWS, Docker, K8s, PostgreSQL, Redis, Sidekiq, SQS, Auth0, SAML, Microservices, AI',
       education: 'Yanka Kupala State University of Grodno — Software Development (2014–2018)',
@@ -91,7 +91,7 @@ const I18N = {
       debug: 'Breakpoint hit at ContactController#hire — opening contact modal…',
       hire: 'Opening contact channels…',
       irb: 'Starting IRB 3.3.0 — type `exit` to return to shell',
-      unknown: 'Command not found. Type `help` or `irb` for Ruby console.',
+      unknown: 'Command not found. Type `help` for available commands.',
       cleared: 'Terminal cleared.'
     },
     files: {
@@ -259,8 +259,8 @@ const I18N = {
       easter: 'Вы нашли скрытую точку останова. Отличные навыки отладки.'
     },
     terminal: {
-      welcome: 'Терминал dubrounik.resume v2.0 — введите `irb` для Ruby-консоли',
-      help: 'Команды: help, whoami, skills, projects, experience, education, irb, run, debug, hire, clear, lang, ls',
+      welcome: 'Добро пожаловать в терминал dubrounik.resume v1.0',
+      help: 'Команды: help, whoami, skills, projects, experience, education, hobbies, run, debug, hire, clear, lang, ls, irb',
       whoami: 'Артём Дубровник — Senior Software Engineer, 8+ лет Ruby/Rails',
       skills: 'Ruby, Rails, React, AWS, Docker, K8s, PostgreSQL, Redis, Sidekiq, SQS, Auth0, SAML, микросервисы, AI',
       education: 'ГрГУ им. Янки Купалы — Разработка ПО (2014–2018)',
@@ -269,7 +269,7 @@ const I18N = {
       debug: 'Точка останова в ContactController#hire — открываю контакты…',
       hire: 'Открываю каналы связи…',
       irb: 'Запуск IRB 3.3.0 — `exit` для возврата в shell',
-      unknown: 'Команда не найдена. Введите `help` или `irb`.',
+      unknown: 'Команда не найдена. Введите `help` для списка команд.',
       cleared: 'Терминал очищен.'
     },
     files: {
