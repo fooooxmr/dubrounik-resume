@@ -167,8 +167,8 @@
         ]},
         { id: 'config', label: tr.config, type: 'folder', children: [
           { id: 'locales', label: tr.locales, type: 'folder', children: [
-            { id: 'en', label: 'en.yml', type: 'yaml', file: 'readme' },
-            { id: 'ru', label: 'ru.yml', type: 'yaml', file: 'readme' }
+            { id: 'en', label: 'en.yml', type: 'yaml', file: 'locale_en' },
+            { id: 'ru', label: 'ru.yml', type: 'yaml', file: 'locale_ru' }
           ]}
         ]},
         { id: 'spec', label: tr.spec, type: 'folder', children: [
