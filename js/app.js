@@ -7,18 +7,17 @@
   const state = {
     lang: localStorage.getItem('resume-lang') || (navigator.language.startsWith('ru') ? 'ru' : 'en'),
     activeFile: 'resume',
+    activePanel: 'project',
     openTabs: ['resume'],
+    openFolders: new Set(['root', 'app', 'models', 'projects', 'services', 'controllers', 'assets']),
     breakpointLine: null,
-    sidePanelOpen: true
-  };
-
-  const FILE_KEYS = {
-    resume: 'files.resume',
-    experience: 'files.experience',
-    skills: 'files.skills',
-    projects: 'files.projects',
-    contact: 'files.contact',
-    spec: 'files.spec'
+    irbMode: false,
+    irbLine: 1,
+    irbCtx: null,
+    minimapVisible: true,
+    toolWindowVisible: true,
+    history: [],
+    historyIdx: -1
   };
 
   function t(path) {
@@ -30,8 +29,7 @@
 
   function applyI18n() {
     $$('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      const val = t(key);
+      const val = t(el.dataset.i18n);
       if (val) el.textContent = val;
     });
     $$('[data-i18n-placeholder]').forEach(el => {
@@ -40,21 +38,25 @@
     document.documentElement.lang = state.lang;
   }
 
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
   function renderSyntax(line) {
     if (line.t === 'empty') return '&nbsp;';
     if (line.t === 'cmt') return `<span class="cmt">${esc(line.s)}</span>`;
     return line.s.replace(/<(\w+)>/g, (_, cls) => `<span class="${cls}">`).replace(/<\/\w+>/g, '</span>');
   }
 
-  function esc(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
   function renderEditor(fileKey) {
+    if (fileKey === 'photo') {
+      renderPhotoView();
+      return;
+    }
     const lines = CODE_FILES[fileKey]?.[state.lang] || [];
     const editor = $('#editor');
     const gutter = $('#gutter');
-    const hireLine = lines.findIndex(l => l.s?.includes('hire!') || l.s?.includes('нанять!') || l.s?.includes('reach_out') || l.s?.includes('связаться'));
+    const hireLine = lines.findIndex(l => l.s?.includes('hire!') || l.s?.includes('нанять!'));
 
     editor.innerHTML = lines.map((line, i) => {
       const n = i + 1;
@@ -64,26 +66,43 @@
 
     gutter.innerHTML = lines.map((_, i) => {
       const n = i + 1;
-      const isBp = (fileKey === 'resume' || fileKey === 'contact') && (n === hireLine + 1 || n === hireLine);
+      const isBp = (fileKey === 'resume' || fileKey === 'contact') && n === hireLine + 1;
       const bp = isBp ? `<span class="bp${state.breakpointLine === n ? ' active' : ''}" data-bp="${n}"></span>` : '';
       return `<span class="ln${n === 1 ? ' current' : ''}" data-ln="${n}">${bp}${n}</span>`;
     }).join('');
 
+    $('#minimap')?.classList.toggle('hidden', !state.minimapVisible);
     renderMinimap(lines);
     updateBreadcrumbs(fileKey);
     bindEditorEvents(fileKey);
+    if (state.activePanel === 'structure') renderStructurePanel();
+  }
+
+  function renderPhotoView() {
+    const editor = $('#editor');
+    const gutter = $('#gutter');
+    gutter.innerHTML = '<span class="ln current">1</span>';
+    editor.innerHTML = `
+      <div class="photo-view">
+        <img src="assets/photo.jpg" alt="Artsiom Dubrounik" class="profile-photo">
+        <div class="photo-meta">
+          <span class="photo-name">Artsiom Dubrounik</span>
+          <span class="photo-role">Senior Software Engineer · Ruby on Rails</span>
+          <span class="photo-hint">${state.lang === 'ru' ? 'assets/photo.jpg — GitHub @fooooxmr' : 'assets/photo.jpg — GitHub @fooooxmr'}</span>
+        </div>
+      </div>`;
+    updateBreadcrumbs('photo');
+    $('#minimap')?.classList.add('hidden');
   }
 
   function renderMinimap(lines) {
     const mm = $('#minimap');
-    if (!mm) return;
+    if (!mm || !state.minimapVisible) return;
     const total = lines.length || 1;
     mm.innerHTML = lines.map((line, i) => {
       let color = '#4a4a4a';
       if (line.t === 'cmt') color = '#3d4a3d';
       else if (line.s?.includes('cls')) color = '#6b5a3a';
-      else if (line.s?.includes('kw')) color = '#5a3d2a';
-      else if (line.s?.includes('str')) color = '#3a5a3a';
       const top = (i / total) * 100;
       const h = Math.max(1.5, (1 / total) * 100);
       return `<div class="minimap-block" style="top:${top}%;height:${h}%;background:${color}"></div>`;
@@ -102,72 +121,111 @@
   function renderTabs() {
     const tabs = $('#tabs');
     tabs.innerHTML = state.openTabs.map(key => {
-      const name = t(FILE_KEYS[key] || key).split('/').pop();
+      const name = key === 'photo' ? 'photo.jpg' : t(FILE_KEYS[key] || key).split('/').pop();
       const active = key === state.activeFile ? 'active' : '';
       return `<button class="tab ${active}" data-tab="${key}"><span class="icon">◆</span>${name}<span class="close" data-close="${key}">×</span></button>`;
     }).join('');
   }
 
   function openFile(key) {
-    if (!CODE_FILES[key]) return;
+    if (!CODE_FILES[key] && key !== 'photo') return;
     if (!state.openTabs.includes(key)) state.openTabs.push(key);
     state.activeFile = key;
     renderTabs();
     renderEditor(key);
-    updatePanelTitle('project');
+    if (state.activePanel === 'project') renderProjectTree();
+    if (state.activePanel === 'structure') renderStructurePanel();
   }
 
-  function renderProjectTree() {
-    const f = I18N[state.lang].files;
-    const tr = I18N[state.lang].tree;
-    const tree = [
-      { id: 'root', label: f.root, type: 'folder', open: true, children: [
+  function getTreeDef() {
+    const f = t('files');
+    const tr = t('tree');
+    const projectChildren = PROJECT_KEYS.map(slug => ({
+      id: PROJECTS_DATA[slug].key,
+      label: `${PROJECTS_DATA[slug].slug}.rb`,
+      type: 'ruby',
+      file: PROJECTS_DATA[slug].key
+    }));
+    return [
+      { id: 'root', label: f.root, type: 'folder', children: [
         { id: 'resume', label: f.resume, type: 'ruby', file: 'resume' },
-        { id: 'app', label: tr.app, type: 'folder', open: true, children: [
-          { id: 'models', label: tr.models, type: 'folder', open: true, children: [
+        { id: 'app', label: tr.app, type: 'folder', children: [
+          { id: 'models', label: tr.models, type: 'folder', children: [
             { id: 'experience', label: 'experience.rb', type: 'ruby', file: 'experience' },
-            { id: 'projects', label: 'projects.rb', type: 'ruby', file: 'projects' }
+            { id: 'education', label: 'education.rb', type: 'ruby', file: 'education' },
+            { id: 'projects-folder', label: tr.projects, type: 'folder', children: [
+              { id: 'projects-index', label: 'projects.rb', type: 'ruby', file: 'projects' },
+              ...projectChildren
+            ]}
           ]},
-          { id: 'services', label: tr.services, type: 'folder', open: true, children: [
+          { id: 'services', label: tr.services, type: 'folder', children: [
             { id: 'skills', label: 'skills_engine.rb', type: 'ruby', file: 'skills' }
           ]},
-          { id: 'controllers', label: tr.controllers, type: 'folder', open: true, children: [
+          { id: 'controllers', label: tr.controllers, type: 'folder', children: [
             { id: 'contact', label: 'contact_controller.rb', type: 'ruby', file: 'contact' }
           ]}
         ]},
-        { id: 'config', label: tr.config, type: 'folder', open: false, children: [
-          { id: 'locales', label: tr.locales, type: 'folder', open: false, children: [
-            { id: 'en', label: 'en.yml', type: 'file', file: 'resume' },
-            { id: 'ru', label: 'ru.yml', type: 'file', file: 'resume' }
+        { id: 'config', label: tr.config, type: 'folder', children: [
+          { id: 'locales', label: tr.locales, type: 'folder', children: [
+            { id: 'en', label: 'en.yml', type: 'yaml', file: 'readme' },
+            { id: 'ru', label: 'ru.yml', type: 'yaml', file: 'readme' }
           ]}
         ]},
-        { id: 'spec', label: tr.spec, type: 'folder', open: false, children: [
+        { id: 'spec', label: tr.spec, type: 'folder', children: [
           { id: 'specfile', label: 'achievements_spec.rb', type: 'ruby', file: 'spec' }
         ]},
-        { id: 'readme', label: f.readme, type: 'file', file: 'resume' },
-        { id: 'gemfile', label: f.gemfile, type: 'file', file: 'skills' }
+        { id: 'assets', label: tr.assets, type: 'folder', children: [
+          { id: 'photo', label: 'photo.jpg', type: 'image', file: 'photo' }
+        ]},
+        { id: 'readme', label: f.readme, type: 'markdown', file: 'readme' },
+        { id: 'gemfile', label: f.gemfile, type: 'gemfile', file: 'gemfile' }
       ]}
     ];
+  }
+
+  function renderProjectTree() {
+    const tree = getTreeDef();
 
     function renderNode(node, depth = 0) {
       const indent = depth * 14 + 8;
-      const icon = node.type === 'folder' ? (node.open ? '▼' : '▶') : (node.type === 'ruby' ? '◆' : '📄');
-      const chevron = node.type === 'folder' ? '<span class="chevron">▶</span>' : '<span class="chevron"></span>';
+      const isOpen = state.openFolders.has(node.id);
+      const isFolder = node.type === 'folder';
+      const iconMap = { folder: '📁', ruby: '◆', markdown: 'ⓘ', gemfile: '💎', yaml: '⚙', image: '🖼' };
+      const icon = isFolder ? (isOpen ? '📂' : '📁') : (iconMap[node.type] || '📄');
       const active = node.file === state.activeFile ? 'active' : '';
-      const openCls = node.open ? 'open' : '';
-      let html = `<div class="tree-item ${node.type} ${active} ${openCls}" style="--indent:${indent}px" data-file="${node.file || ''}" data-folder="${node.id}">${chevron}<span class="icon">${icon}</span>${node.label}</div>`;
-      if (node.open && node.children) {
-        html += node.children.map(c => renderNode(c, depth + 1)).join('');
+      const folderCls = isFolder ? 'folder' : node.type;
+      let html = `<div class="tree-item ${folderCls} ${active}${isFolder && isOpen ? ' open' : ''}" style="--indent:${indent}px" data-id="${node.id}" ${node.file ? `data-file="${node.file}"` : ''} ${isFolder ? 'data-is-folder="1"' : ''}>`;
+      html += `<span class="chevron">${isFolder ? '▶' : ''}</span><span class="icon">${icon}</span><span class="label">${node.label}</span></div>`;
+      if (isFolder && isOpen && node.children) {
+        html += `<div class="tree-children">${node.children.map(c => renderNode(c, depth + 1)).join('')}</div>`;
       }
       return html;
     }
 
-    $('#panelContent').innerHTML = tree.map(n => renderNode(n)).join('');
+    $('#panelContent').innerHTML = `<div class="profile-card" id="profileCard">
+      <img src="assets/photo.jpg" alt="" class="profile-thumb">
+      <div><strong>Artsiom Dubrounik</strong><br><span class="profile-sub">Senior Rails Engineer</span></div>
+    </div>` + tree.map(n => renderNode(n)).join('');
+  }
+
+  function renderStructurePanel() {
+    const symbols = STRUCTURE_INDEX[state.activeFile] || [];
+    if (!symbols.length) {
+      $('#panelContent').innerHTML = `<div class="structure-empty">${t('structure.empty')}</div>`;
+      return;
+    }
+    $('#panelContent').innerHTML = symbols.map(s => `
+      <div class="struct-item struct-${s.kind}" data-line="${s.line}" data-symbol="${s.name}">
+        <span class="struct-icon">${s.icon}</span>
+        <span class="struct-kind">${s.kind}</span>
+        <span class="struct-name">${s.name}</span>
+        <span class="struct-line">:${s.line}</span>
+      </div>
+    `).join('');
   }
 
   function renderGitLog() {
-    const entries = t('gitLog');
-    return entries.map(e => `
+    return t('gitLog').map(e => `
       <div class="git-entry" data-hash="${e.hash}">
         <span class="git-hash">${e.hash}</span>
         <span class="git-msg">${e.msg}</span>
@@ -202,6 +260,21 @@
     termPrint(t('terminal.welcome'), 'info');
   }
 
+  function updateTerminalPrompt() {
+    const prompt = $('#terminalPrompt');
+    const cwd = $('#terminalCwd');
+    if (state.irbMode) {
+      const n = String(state.irbLine).padStart(3, '0');
+      prompt.textContent = `irb(main):${n}:0>`;
+      prompt.classList.add('irb');
+      cwd.style.display = 'none';
+    } else {
+      prompt.textContent = '➜';
+      prompt.classList.remove('irb');
+      cwd.style.display = '';
+    }
+  }
+
   function termPrint(text, cls = '') {
     const out = $('#terminalOutput');
     text.split('\n').forEach(line => {
@@ -210,45 +283,101 @@
     out.scrollTop = out.scrollHeight;
   }
 
+  function startIrb() {
+    state.irbMode = true;
+    state.irbLine = 1;
+    state.irbCtx = IrbEngine.buildContext(state.lang);
+    updateTerminalPrompt();
+    termPrint(t('terminal.irb'), 'info');
+    termPrint('irb(main):001:0> # Dubrounik, Projects, Experience, SkillsEngine available', 'info');
+  }
+
+  function stopIrb() {
+    state.irbMode = false;
+    state.irbLine = 1;
+    updateTerminalPrompt();
+    termPrint('← back to shell', 'info');
+  }
+
+  function handleIrbInput(expr) {
+    termPrint(`irb(main):${String(state.irbLine).padStart(3, '0')}:0> ${expr}`, 'cmd');
+    if (expr.trim() === 'exit') { stopIrb(); return; }
+    try {
+      const result = IrbEngine.eval(expr, state.irbCtx);
+      if (result) termPrint(result, 'irb-out');
+      if (expr.includes('hire')) setTimeout(showContact, 400);
+    } catch (e) {
+      termPrint(e.message, 'error');
+    }
+    state.irbLine++;
+    updateTerminalPrompt();
+  }
+
   function handleTerminalCommand(cmd) {
-    const c = cmd.trim().toLowerCase();
-    if (!c) return;
+    const raw = cmd.trim();
+    if (!raw) return;
+
+    if (state.irbMode) { handleIrbInput(raw); return; }
+
     termPrint(`➜ ${cmd}`, 'cmd');
+    const c = raw.toLowerCase();
 
     const map = {
       help: () => t('terminal.help'),
       whoami: () => t('terminal.whoami'),
-      skills: () => t('terminal.skills'),
-      projects: () => { openFile('projects'); return t('terminal.skills').split(',')[0] + '… → opening projects.rb'; },
+      skills: () => { openFile('skills'); return t('terminal.skills'); },
+      projects: () => { openFile('projects'); return '→ opening projects.rb'; },
       experience: () => { openFile('experience'); return '→ opening experience.rb'; },
-      education: () => t('terminal.education'),
+      education: () => { openFile('education'); return t('terminal.education'); },
       hobbies: () => t('terminal.hobbies'),
+      irb: () => { startIrb(); return null; },
       run: () => { runSpecs(); return t('terminal.run'); },
-      debug: () => { setTimeout(() => showContact(), 400); return t('terminal.debug'); },
-      hire: () => { setTimeout(() => showContact(), 300); return t('terminal.hire'); },
+      debug: () => { triggerDebug(); return t('terminal.debug'); },
+      hire: () => { setTimeout(showContact, 300); return t('terminal.hire'); },
       clear: () => { $('#terminalOutput').innerHTML = ''; return null; },
       lang: () => { toggleLang(); return `→ ${state.lang.toUpperCase()}`; },
-      ls: () => 'dubrounik.resume.rb  app/  config/  spec/  Gemfile  README.md',
+      ls: () => 'README.md  Gemfile  dubrounik.resume.rb  app/  spec/  assets/photo.jpg',
       pwd: () => '/Users/artsiom/dubrounik.resume',
-      ruby: () => 'ruby 3.3.0 (2024-04-23 revision aab39f6a7d) [arm64-darwin]',
-      bundle: () => c.includes('hire') ? (showContact(), 'Contact channels deployed.') : 'Could not find gem dubrounik in locally installed gems.',
+      ruby: () => 'ruby 3.3.0 (2024-04-23) [arm64-darwin] — type `irb` to start console',
+      cat: () => c.includes('readme') ? '→ opening README.md' : null,
+      open: () => {
+        const f = raw.split(' ')[1];
+        if (f?.includes('readme')) { openFile('readme'); return '→ README.md'; }
+        if (f?.includes('gemfile')) { openFile('gemfile'); return '→ Gemfile'; }
+        return null;
+      },
+      bundle: () => raw.includes('hire') ? (showContact(), 'Contact channels deployed.') : 'Could not find gem dubrounik locally. Try: bundle exec dubrounik --hire',
       exit: () => 'There is no escape from excellence.',
-      debugger: () => (showContact(), 'Breakpoint triggered.')
+      debugger: () => (triggerDebug(), 'Breakpoint triggered.')
     };
+
+    if (c.startsWith('cat ')) {
+      const r = map.cat();
+      if (r) { openFile('readme'); termPrint(r); return; }
+    }
+    if (c.startsWith('open ')) {
+      const r = map.open();
+      if (r) { termPrint(r); return; }
+    }
 
     const fn = map[c] || map[c.split(' ')[0]];
     if (fn) {
       const result = fn();
-      if (result) termPrint(result, c === 'run' ? 'success' : '');
+      if (result) termPrint(result, c === 'run' ? 'success' : c === 'irb' ? 'info' : '');
     } else {
       termPrint(t('terminal.unknown'), 'error');
     }
   }
 
+  function triggerDebug() {
+    state.breakpointLine = 41;
+    renderEditor(state.activeFile);
+    setTimeout(showContact, 600);
+  }
+
   function runSpecs() {
     switchToolTab('run');
-    const runPane = $('#tw-run');
-    runPane.innerHTML = renderRunOutput();
+    $('#tw-run').innerHTML = renderRunOutput();
     $('#ide').classList.add('glitch');
     setTimeout(() => $('#ide').classList.remove('glitch'), 300);
   }
@@ -257,17 +386,41 @@
     $('#contactOverlay').classList.remove('hidden');
   }
 
+  function showPhoto() {
+    openFile('photo');
+  }
+
   function hideOverlays() {
     $$('.overlay').forEach(o => o.classList.add('hidden'));
+    hideMenuDropdown();
+  }
+
+  function hideMenuDropdown() {
+    $('#menuDropdown')?.classList.add('hidden');
+  }
+
+  function showMenuDropdown(menu, anchor) {
+    const items = t(`menuItems.${menu}`);
+    if (!items) return;
+    const dd = $('#menuDropdown');
+    dd.innerHTML = items.map(i =>
+      `<button class="menu-dd-item" data-action="${i.action}"><span>${i.label}</span>${i.shortcut ? `<span class="shortcut">${i.shortcut}</span>` : ''}</button>`
+    ).join('');
+    const rect = anchor.getBoundingClientRect();
+    dd.style.left = rect.left + 'px';
+    dd.style.top = rect.bottom + 'px';
+    dd.classList.remove('hidden');
+    dd.dataset.menu = menu;
   }
 
   function toggleLang() {
     state.lang = state.lang === 'en' ? 'ru' : 'en';
     localStorage.setItem('resume-lang', state.lang);
+    if (state.irbMode) state.irbCtx = IrbEngine.buildContext(state.lang);
     applyI18n();
     renderTabs();
     renderEditor(state.activeFile);
-    renderProjectTree();
+    refreshPanels();
     $('#tw-run').innerHTML = renderRunOutput();
     $('#tw-problems').innerHTML = renderProblems();
     $('#tw-git-log').innerHTML = renderGitLog();
@@ -275,19 +428,90 @@
     renderPalette($('#paletteInput')?.value || '');
   }
 
+  function refreshPanels() {
+    if (state.activePanel === 'project') renderProjectTree();
+    else if (state.activePanel === 'structure') renderStructurePanel();
+    else if (state.activePanel === 'git') $('#panelContent').innerHTML = renderGitLog();
+  }
+
   function switchToolTab(name) {
     $$('.tw-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.tw === name));
     $$('.tw-pane').forEach(pane => pane.classList.remove('active'));
     const pane = $(`#tw-${name}`);
     if (pane) pane.classList.add('active');
+    state.toolWindowVisible = true;
+    $('#toolWindow').classList.remove('collapsed');
   }
 
-  function updatePanelTitle(panel) {
-    const titles = { project: 'panel.project', git: 'panel.git', structure: 'panel.structure', terminal: 'panel.terminal', contact: 'panel.contact' };
+  function setActivePanel(panel) {
+    state.activePanel = panel;
+    $$('.ab-btn').forEach(b => b.classList.toggle('active', b.dataset.panel === panel));
+    const titles = { project: 'panel.project', git: 'panel.git', structure: 'panel.structure' };
     $('#panelTitle').textContent = t(titles[panel] || 'panel.project');
-    if (panel === 'project' || panel === 'structure') renderProjectTree();
-    if (panel === 'git') $('#panelContent').innerHTML = renderGitLog();
-    if (panel === 'contact') showContact();
+    if (panel === 'project') renderProjectTree();
+    else if (panel === 'structure') renderStructurePanel();
+    else if (panel === 'git') $('#panelContent').innerHTML = renderGitLog();
+    $('#sidePanel').classList.add('mobile-open');
+  }
+
+  function scrollToLine(line) {
+    const el = $(`#editor .line[data-line="${line}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('highlight');
+      setTimeout(() => el.classList.remove('highlight'), 1500);
+      $('#sbPos').textContent = `Ln ${line}, Col 1`;
+    }
+  }
+
+  function handleAction(action) {
+    hideOverlays();
+    hideMenuDropdown();
+    if (action.startsWith('file:')) openFile(action.slice(5));
+    else if (action.startsWith('panel:')) setActivePanel(action.slice(6));
+    else if (action === 'run') runSpecs();
+    else if (action === 'debug') triggerDebug();
+    else if (action === 'contact') showContact();
+    else if (action === 'photo') showPhoto();
+    else if (action === 'search') { $('#searchOverlay').classList.remove('hidden'); $('#searchInput').focus(); }
+    else if (action === 'palette') { $('#paletteOverlay').classList.remove('hidden'); renderPalette(); $('#paletteInput').focus(); }
+    else if (action === 'lang') toggleLang();
+    else if (action === 'terminal') { switchToolTab('terminal'); state.toolWindowVisible = true; $('#toolWindow').classList.remove('collapsed'); }
+    else if (action === 'gitlog') switchToolTab('git-log');
+    else if (action === 'services') switchToolTab('services');
+    else if (action === 'problems') switchToolTab('problems');
+    else if (action === 'irb') { switchToolTab('terminal'); startIrb(); $('#terminalInput').focus(); }
+    else if (action === 'copy-email') { navigator.clipboard?.writeText('artsiom.dubrounik@gmail.com'); termPrint('Copied: artsiom.dubrounik@gmail.com', 'success'); switchToolTab('terminal'); }
+    else if (action === 'close-tab') {
+      const key = state.activeFile;
+      state.openTabs = state.openTabs.filter(t => t !== key);
+      state.activeFile = state.openTabs[state.openTabs.length - 1] || 'resume';
+      if (!state.openTabs.length) state.openTabs = ['resume'];
+      renderTabs(); renderEditor(state.activeFile);
+    }
+    else if (action === 'minimap') { state.minimapVisible = !state.minimapVisible; renderEditor(state.activeFile); }
+    else if (action === 'toolwindow') {
+      state.toolWindowVisible = !state.toolWindowVisible;
+      $('#toolWindow').classList.toggle('collapsed', !state.toolWindowVisible);
+    }
+    else if (action === 'goto-decl') scrollToLine(5);
+    else if (action === 'quick-doc') {
+      const hint = t('tooltip.class');
+      $('#inlineHint').textContent = hint;
+      setTimeout(() => $('#inlineHint').textContent = '', 4000);
+    }
+    else if (action === 'reformat') {
+      $('#editor').classList.add('reformat-flash');
+      setTimeout(() => $('#editor').classList.remove('reformat-flash'), 500);
+    }
+    else if (action === 'blame') { switchToolTab('git-log'); termPrint(t('blame'), 'info'); }
+    else if (action === 'term-help') { switchToolTab('terminal'); termPrint(t('terminal.help'), 'info'); }
+    else if (action === 'shortcuts') { switchToolTab('terminal'); termPrint(t('shortcuts'), 'info'); }
+    else if (action === 'about') { switchToolTab('terminal'); termPrint(t('about'), 'info'); }
+    else if (action === 'rename-tab' || action === 'extract') {
+      termPrint(action === 'extract' ? 'Extracted method: def excellence; end ✓' : 'Tab renamed (not really — it\'s HTML)', 'info');
+      switchToolTab('terminal');
+    }
   }
 
   function renderPalette(query = '') {
@@ -299,32 +523,22 @@
     ).join('');
   }
 
-  function handlePaletteAction(action) {
-    hideOverlays();
-    if (action.startsWith('file:')) openFile(action.split(':')[1]);
-    else if (action === 'run') runSpecs();
-    else if (action === 'contact') showContact();
-    else if (action === 'search') { $('#searchOverlay').classList.remove('hidden'); $('#searchInput').focus(); }
-    else if (action === 'lang') toggleLang();
-    else if (action === 'terminal') switchToolTab('terminal');
-    else if (action === 'gitlog') switchToolTab('git-log');
-  }
-
   function renderSearchResults(query) {
     const q = query.toLowerCase().trim();
     if (!q) { $('#searchResults').innerHTML = ''; return; }
-    const results = SEARCH_INDEX.filter(item => item.q.includes(q) || q.split(' ').some(w => item.q.includes(w)));
+    const results = SEARCH_INDEX.filter(item => item.q.includes(q) || q.split(' ').some(w => w.length > 2 && item.q.includes(w)));
     $('#searchResults').innerHTML = results.map(r => {
-      const file = Object.keys(CODE_FILES).find(k => k === r.file) || 'resume';
-      const label = t(FILE_KEYS[file]);
-      return `<li data-search-file="${file}" data-line="${r.line}"><span>${label}:${r.line}</span><span style="color:var(--text-dim)">${r.q.split(' ')[0]}…</span></li>`;
-    }).join('') || `<li style="color:var(--text-dim)">No matches</li>`;
+      const label = t(FILE_KEYS[r.file] || 'files.resume');
+      return `<li data-search-file="${r.file}" data-line="${r.line}"><span>${label}:${r.line}</span><span class="search-match">${r.q.split(' ').slice(0, 2).join(' ')}…</span></li>`;
+    }).join('') || `<li class="search-empty">No matches</li>`;
   }
 
   function bindEditorEvents(fileKey) {
     const editor = $('#editor');
+    if (!editor) return;
     editor.onscroll = () => {
-      gutter.scrollTop = editor.scrollTop;
+      const gutter = $('#gutter');
+      if (gutter) gutter.scrollTop = editor.scrollTop;
       const lines = editor.querySelectorAll('.line');
       const rect = editor.getBoundingClientRect();
       for (const line of lines) {
@@ -349,6 +563,9 @@
     editor.querySelectorAll('.cls, .mth').forEach(el => {
       el.onmouseenter = e => showTooltip(e, el.classList.contains('cls') ? t('tooltip.class') : t('tooltip.method'));
       el.onmouseleave = hideTooltip;
+      el.onclick = () => {
+        if (el.classList.contains('mth') && (el.textContent.includes('hire') || el.textContent.includes('нанять'))) showContact();
+      };
     });
   }
 
@@ -367,7 +584,7 @@
     if (splash.classList.contains('fade-out')) return;
     splash.classList.add('fade-out');
     $('#ide').classList.remove('hidden');
-    setTimeout(() => { splash.remove(); }, 700);
+    setTimeout(() => splash.remove(), 700);
   }
 
   function initSplash() {
@@ -380,18 +597,16 @@
   function initEvents() {
     $('#langToggle').onclick = toggleLang;
     $('#runBtn').onclick = runSpecs;
-    $('#debugBtn').onclick = () => { state.breakpointLine = 38; renderEditor(state.activeFile); setTimeout(showContact, 600); };
-    $('#searchBtn').onclick = () => { $('#searchOverlay').classList.remove('hidden'); $('#searchInput').focus(); };
-    $('#paletteBtn').onclick = () => { $('#paletteOverlay').classList.remove('hidden'); $('#paletteInput').value = ''; renderPalette(); $('#paletteInput').focus(); };
-
+    $('#debugBtn').onclick = triggerDebug;
+    $('#searchBtn').onclick = () => handleAction('search');
+    $('#paletteBtn').onclick = () => handleAction('palette');
     $('#tabs').onclick = e => {
       const close = e.target.dataset.close;
       if (close) {
         state.openTabs = state.openTabs.filter(t => t !== close);
-        if (state.activeFile === close) state.activeFile = state.openTabs[state.openTabs.length - 1] || 'resume';
+        state.activeFile = state.openTabs[state.openTabs.length - 1] || 'resume';
         if (!state.openTabs.length) state.openTabs = ['resume'];
-        renderTabs();
-        renderEditor(state.activeFile);
+        renderTabs(); renderEditor(state.activeFile);
         return;
       }
       const tab = e.target.closest('[data-tab]');
@@ -399,10 +614,18 @@
     };
 
     $('#panelContent').onclick = e => {
+      if (e.target.closest('.profile-card')) { showPhoto(); return; }
+
+      const struct = e.target.closest('.struct-item');
+      if (struct) { scrollToLine(+struct.dataset.line); return; }
+
       const item = e.target.closest('.tree-item');
       if (!item) return;
-      if (item.dataset.folder && !item.dataset.file) {
-        item.classList.toggle('open');
+
+      if (item.dataset.isFolder === '1') {
+        const id = item.dataset.id;
+        if (state.openFolders.has(id)) state.openFolders.delete(id);
+        else state.openFolders.add(id);
         renderProjectTree();
         return;
       }
@@ -411,62 +634,77 @@
 
     $$('.ab-btn').forEach(btn => {
       btn.onclick = () => {
-        $$('.ab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         const panel = btn.dataset.panel;
-        if (panel === 'terminal') switchToolTab('terminal');
-        else if (panel === 'contact') showContact();
-        else {
-          $('#sidePanel').classList.add('mobile-open');
-          updatePanelTitle(panel === 'git' ? 'git' : panel === 'structure' ? 'structure' : 'project');
-        }
+        if (panel === 'terminal') { switchToolTab('terminal'); return; }
+        if (panel === 'contact') { showContact(); return; }
+        setActivePanel(panel);
       };
     });
 
     $('#panelClose').onclick = () => $('#sidePanel').classList.remove('mobile-open');
-
     $$('.tw-tab').forEach(tab => tab.onclick = () => switchToolTab(tab.dataset.tw));
 
-    $('#terminalInput').onkeydown = e => {
+    const termInput = $('#terminalInput');
+    termInput.onkeydown = e => {
       if (e.key === 'Enter') {
-        handleTerminalCommand(e.target.value);
+        const val = e.target.value;
+        if (!state.irbMode) state.history.push(val);
+        handleTerminalCommand(val);
         e.target.value = '';
+        state.historyIdx = state.history.length;
+      } else if (e.key === 'ArrowUp' && !state.irbMode) {
+        e.preventDefault();
+        if (state.historyIdx > 0) { state.historyIdx--; e.target.value = state.history[state.historyIdx]; }
+      } else if (e.key === 'ArrowDown' && !state.irbMode) {
+        e.preventDefault();
+        if (state.historyIdx < state.history.length - 1) { state.historyIdx++; e.target.value = state.history[state.historyIdx]; }
+        else { state.historyIdx = state.history.length; e.target.value = ''; }
       }
     };
 
     $('#paletteInput').oninput = e => renderPalette(e.target.value);
     $('#paletteResults').onclick = e => {
       const li = e.target.closest('[data-action]');
-      if (li) handlePaletteAction(li.dataset.action);
+      if (li) handleAction(li.dataset.action);
     };
 
     $('#searchInput').oninput = e => renderSearchResults(e.target.value);
     $('#searchResults').onclick = e => {
       const li = e.target.closest('[data-search-file]');
-      if (li) { hideOverlays(); openFile(li.dataset.searchFile); }
+      if (li) { hideOverlays(); openFile(li.dataset.searchFile); scrollToLine(+li.dataset.line || 1); }
     };
 
     $$('.overlay').forEach(o => o.onclick = e => { if (e.target === o) hideOverlays(); });
     $$('[data-close]').forEach(b => b.onclick = () => hideOverlays());
 
     $$('.menu-item').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = e => {
+        e.stopPropagation();
         const menu = btn.dataset.menu;
-        if (menu === 'run') runSpecs();
-        else if (menu === 'help' || menu === 'navigate') { $('#paletteOverlay').classList.remove('hidden'); renderPalette(); $('#paletteInput').focus(); }
-        else if (menu === 'refactor') toggleLang();
-        else if (menu === 'git') { switchToolTab('git-log'); updatePanelTitle('git'); }
-        else if (menu === 'tools') switchToolTab('services');
+        const dd = $('#menuDropdown');
+        if (!dd.classList.contains('hidden') && dd.dataset.menu === menu) hideMenuDropdown();
+        else showMenuDropdown(menu, btn);
       };
+    });
+
+    $('#menuDropdown').onclick = e => {
+      const item = e.target.closest('[data-action]');
+      if (item) handleAction(item.dataset.action);
+    };
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.menubar') && !e.target.closest('#menuDropdown')) hideMenuDropdown();
     });
 
     $$('.titlebar .dot').forEach(dot => {
       dot.onclick = () => {
         if (dot.dataset.action === 'close') showContact();
-        else if (dot.dataset.action === 'minimize') switchToolTab('terminal');
+        else if (dot.dataset.action === 'minimize') handleAction('terminal');
         else runSpecs();
       };
     });
+
+    $('#sbProblems').onclick = () => handleAction('problems');
 
     $$('#mobileNav button').forEach(btn => {
       btn.onclick = () => {
@@ -474,8 +712,7 @@
         btn.classList.add('active');
         const mode = btn.dataset.mobile;
         $('#sidePanel').classList.remove('mobile-open');
-        if (mode === 'editor') { /* default */ }
-        else if (mode === 'project') { $('#sidePanel').classList.add('mobile-open'); updatePanelTitle('project'); }
+        if (mode === 'project') setActivePanel('project');
         else if (mode === 'terminal') switchToolTab('terminal');
         else if (mode === 'contact') showContact();
       };
@@ -484,26 +721,19 @@
     document.onkeydown = e => {
       if (e.key === 'Escape') hideOverlays();
       if ((e.metaKey || e.ctrlKey) && e.key === 'l') { e.preventDefault(); toggleLang(); }
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'f') { e.preventDefault(); $('#searchOverlay').classList.remove('hidden'); $('#searchInput').focus(); }
-      if (e.shiftKey && e.key === 'Shift' && !$('#paletteOverlay').classList.contains('hidden') === false) {
-        // double-shift handled below
-      }
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'f') { e.preventDefault(); handleAction('search'); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'r') { e.preventDefault(); runSpecs(); }
     };
 
     let lastShift = 0;
     document.addEventListener('keydown', e => {
       if (e.key === 'Shift') {
         const now = Date.now();
-        if (now - lastShift < 400) {
-          $('#paletteOverlay').classList.remove('hidden');
-          renderPalette();
-          $('#paletteInput').focus();
-        }
+        if (now - lastShift < 400) handleAction('palette');
         lastShift = now;
       }
     });
 
-    // Tool window resize
     let resizing = false;
     $('#twResize').onmousedown = () => { resizing = true; };
     document.onmousemove = e => {
@@ -522,6 +752,7 @@
     renderEditor('resume');
     renderProjectTree();
     initToolWindows();
+    updateTerminalPrompt();
     initSplash();
     initEvents();
   }
