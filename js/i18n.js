@@ -71,7 +71,7 @@ const I18N = {
     panel: { project: 'Project', git: 'Version Control', structure: 'Structure', terminal: 'Terminal', contact: 'Hire Me' },
     structure: { empty: 'No symbols in file', title: 'Structure' },
     tw: { terminal: 'Terminal', run: 'Run', problems: 'Problems', gitLog: 'Git Log', services: 'Services' },
-    status: { problems: '✓ 0 errors, 0 warnings, 8+ years exp', ruby: '♦ Rubyroid at heart' },
+    status: { problems: '✓ 0 errors, 0 warnings, 8+ years exp', ruby: '♦ Ruby in my heart forever' },
     palette: { placeholder: 'Search Everywhere…' },
     search: { title: 'Find in Path', placeholder: 'Search skills, projects…' },
     contact: {
@@ -247,7 +247,7 @@ const I18N = {
     panel: { project: 'Проект', git: 'Контроль версий', structure: 'Структура', terminal: 'Терминал', contact: 'Нанять' },
     structure: { empty: 'Нет символов в файле', title: 'Структура' },
     tw: { terminal: 'Терминал', run: 'Запуск', problems: 'Проблемы', gitLog: 'Git Log', services: 'Сервисы' },
-    status: { problems: '✓ 0 ошибок, 0 предупреждений, 8+ лет опыта', ruby: '♦ Rubyroid в душе' },
+    status: { problems: '✓ 0 ошибок, 0 предупреждений, 8+ лет опыта', ruby: '♦ Ruby в сердце навсегда' },
     palette: { placeholder: 'Поиск везде…' },
     search: { title: 'Найти в пути', placeholder: 'Поиск навыков, проектов…' },
     contact: {
