@@ -5,7 +5,7 @@
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
   const state = {
-    lang: localStorage.getItem('resume-lang') || 'en',
+    lang: localStorage.getItem('resume-lang-v2') || 'en',
     activeFile: 'resume',
     activePanel: 'project',
     openTabs: ['resume'],
@@ -48,12 +48,18 @@
     return line.s.replace(/<(\w+)>/g, (_, cls) => `<span class="${cls}">`).replace(/<\/\w+>/g, '</span>');
   }
 
+  function getFileLines(fileKey) {
+    const fixedLang = { readme: 'en', locale_en: 'en', locale_ru: 'ru', gemfile: 'en' };
+    const lang = fixedLang[fileKey] || state.lang;
+    return CODE_FILES[fileKey]?.[lang] || [];
+  }
+
   function renderEditor(fileKey) {
     if (fileKey === 'photo') {
       renderPhotoView();
       return;
     }
-    const lines = CODE_FILES[fileKey]?.[state.lang] || [];
+    const lines = getFileLines(fileKey);
     const editor = $('#editor');
     const gutter = $('#gutter');
     const hireLine = lines.findIndex(l => l.s?.includes('hire!') || l.s?.includes('нанять!'));
@@ -192,7 +198,7 @@
       const isFolder = node.type === 'folder';
       const iconMap = { folder: '📁', ruby: '◆', markdown: 'ⓘ', gemfile: '💎', yaml: '⚙', image: '🖼' };
       const icon = isFolder ? (isOpen ? '📂' : '📁') : (iconMap[node.type] || '📄');
-      const active = node.file === state.activeFile ? 'active' : '';
+      const active = node.file && node.file === state.activeFile ? 'active' : '';
       const folderCls = isFolder ? 'folder' : node.type;
       let html = `<div class="tree-item ${folderCls} ${active}${isFolder && isOpen ? ' open' : ''}" style="--indent:${indent}px" data-id="${node.id}" ${node.file ? `data-file="${node.file}"` : ''} ${isFolder ? 'data-is-folder="1"' : ''}>`;
       html += `<span class="chevron">${isFolder ? '▶' : ''}</span><span class="icon">${icon}</span><span class="label">${node.label}</span></div>`;
@@ -281,11 +287,6 @@
       out.innerHTML += `<div class="line-out ${cls}">${esc(line)}</div>`;
     });
     out.scrollTop = out.scrollHeight;
-  }
-
-  function getIrbEngine() {
-    if (typeof window.IrbEngine !== 'undefined') return window.IrbEngine;
-    return window.IrbEngine = createIrbEngine();
   }
 
   function createIrbEngine() {
@@ -474,19 +475,14 @@
     return { buildContext, eval: safeEval, format };
   }
 
+  const irbEngine = createIrbEngine();
+
   function startIrb() {
-    try {
-      const engine = getIrbEngine();
-      state.irbMode = true;
-      state.irbLine = 1;
-      state.irbCtx = engine.buildContext(state.lang);
-      updateTerminalPrompt();
-      termPrint(t('terminal.irb'), 'info');
-      termPrint('irb(main):001:0> # try: puts 1, Dubrounik.new.about_me, Projects.count', 'info');
-    } catch (err) {
-      state.irbMode = false;
-      termPrint(`IRB failed to start: ${err.message}`, 'error');
-    }
+    state.irbMode = true;
+    state.irbLine = 1;
+    state.irbCtx = irbEngine.buildContext(state.lang);
+    updateTerminalPrompt();
+    termPrint('Ruby IRB 3.3.0 — interactive console. Type `help`, `exit` to leave.', 'info');
   }
 
   function stopIrb() {
@@ -500,8 +496,7 @@
     termPrint(`irb(main):${String(state.irbLine).padStart(3, '0')}:0> ${expr}`, 'cmd');
     if (expr.trim() === 'exit') { stopIrb(); return; }
     try {
-      const engine = getIrbEngine();
-      const result = engine.eval(expr, state.irbCtx);
+      const result = irbEngine.eval(expr, state.irbCtx);
       if (result && typeof result === 'object' && result.output !== undefined) {
         termPrint(result.output, 'irb-out');
         termPrint(result.result, 'irb-out');
@@ -618,8 +613,8 @@
 
   function toggleLang() {
     state.lang = state.lang === 'en' ? 'ru' : 'en';
-    localStorage.setItem('resume-lang', state.lang);
-    if (state.irbMode) state.irbCtx = getIrbEngine().buildContext(state.lang);
+    localStorage.setItem('resume-lang-v2', state.lang);
+    if (state.irbMode) state.irbCtx = irbEngine.buildContext(state.lang);
     applyI18n();
     renderTabs();
     renderEditor(state.activeFile);
