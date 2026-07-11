@@ -56,6 +56,7 @@
       <button class="menu-item" data-menu="git" data-i18n="menu.git">Git</button>
       <button class="menu-item" data-menu="help" data-i18n="menu.help">Help</button>
     </nav>
+    <div id="menuDropdown" class="menu-dropdown hidden" role="menu"></div>
 
     <!-- Toolbar -->
     <div class="toolbar">
@@ -137,8 +138,8 @@
         <div class="tw-pane active" id="tw-terminal">
           <div class="terminal-output" id="terminalOutput"></div>
           <div class="terminal-input-line">
-            <span class="prompt">➜</span>
-            <span class="cwd">~/dubrounik.resume</span>
+            <span class="prompt" id="terminalPrompt">➜</span>
+            <span class="cwd" id="terminalCwd">~/dubrounik.resume</span>
             <input type="text" id="terminalInput" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal input">
           </div>
         </div>
@@ -184,6 +185,7 @@
   <div class="overlay hidden" id="contactOverlay">
     <div class="contact-modal">
       <button class="modal-close" data-close="contact">×</button>
+      <img src="assets/photo.jpg" alt="Artsiom Dubrounik" class="contact-photo">
       <h2 data-i18n="contact.title">bundle exec dubrounik --hire</h2>
       <p class="contact-sub" data-i18n="contact.sub">Deployment successful. Let's connect.</p>
       <div class="contact-grid">
@@ -219,7 +221,10 @@
     <button data-mobile="contact">Hire</button>
   </nav>
 
+  <script src="js/projects-data.js"></script>
+  <script src="js/content.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/irb.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
