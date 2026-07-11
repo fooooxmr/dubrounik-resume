@@ -128,7 +128,7 @@ const IrbEngine = (() => {
     const math = e.match(/^(\d+)\s*([+\-*/%])\s*(\d+)$/);
     if (math) {
       const [, a, op, b] = math;
-      const ops = { '+': +a + +b, '-': +a - +b, '*': +a * *b, '/': +a / +b, '%': +a % +b };
+      const ops = { '+': +a + +b, '-': +a - +b, '*': +a * +b, '/': +a / +b, '%': +a % +b };
       return `=> ${ops[op]}`;
     }
 
