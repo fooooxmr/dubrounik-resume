@@ -162,6 +162,37 @@ html, body {
   border-radius: 3px;
 }
 .menu-item:hover { background: rgba(255,255,255,0.08); }
+.menu-item.active { background: rgba(75,110,175,0.35); color: var(--text-bright); }
+
+.menu-dropdown {
+  position: fixed;
+  z-index: 2000;
+  min-width: 240px;
+  max-width: 320px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  padding: 4px 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.menu-dd-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 7px 16px;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  gap: 16px;
+}
+.menu-dd-item:hover { background: var(--selection); }
+.menu-dd-item .shortcut { color: var(--text-dim); font-size: 10px; font-family: var(--font-mono); }
 
 /* Toolbar */
 .toolbar {
@@ -305,6 +336,90 @@ html, body {
 .tree-item.ruby .icon { color: var(--keyword); }
 .tree-item .chevron { font-size: 8px; color: var(--text-dim); transition: transform 0.15s; }
 .tree-item.open > .chevron { transform: rotate(90deg); }
+.tree-children { /* nested folder contents */ }
+.tree-item .label { overflow: hidden; text-overflow: ellipsis; }
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: 4px 8px 8px;
+  background: var(--bg-editor);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.profile-card:hover { border-color: var(--accent); }
+.profile-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent);
+}
+.profile-sub { font-size: 10px; color: var(--text-dim); }
+
+.struct-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.struct-item:hover { background: rgba(255,255,255,0.06); }
+.struct-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.struct-class .struct-icon { background: rgba(255,198,109,0.2); color: var(--class); }
+.struct-method .struct-icon { background: rgba(152,118,170,0.2); color: var(--symbol); }
+.struct-module .struct-icon { background: rgba(104,151,187,0.2); color: var(--number); }
+.struct-const .struct-icon { background: rgba(106,135,89,0.2); color: var(--string); }
+.struct-kind { color: var(--text-dim); font-size: 10px; text-transform: uppercase; min-width: 42px; }
+.struct-name { color: var(--text); flex: 1; }
+.struct-line { color: var(--text-dim); font-size: 10px; }
+.structure-empty { padding: 16px; color: var(--text-dim); font-style: italic; }
+
+.photo-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  gap: 20px;
+  padding: 24px;
+}
+.profile-photo {
+  width: min(280px, 70vw);
+  height: min(280px, 70vw);
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid var(--accent);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.photo-meta { text-align: center; }
+.photo-name { display: block; font-size: 1.2rem; color: var(--class); font-weight: 600; }
+.photo-role { display: block; color: var(--text-dim); margin-top: 4px; }
+.photo-hint { display: block; font-size: 11px; color: var(--text-dim); margin-top: 8px; font-family: var(--font-mono); }
+
+.contact-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent);
+  margin-bottom: 16px;
+}
 
 /* Editor area */
 .editor-area {
@@ -525,6 +640,8 @@ html, body {
   border-top: 1px solid var(--border);
 }
 .prompt { color: var(--green); font-weight: 600; }
+.prompt.irb { color: var(--keyword); font-family: var(--font-mono); font-size: 11px; }
+.terminal-output .irb-out { color: #c8b8e8; }
 .cwd { color: var(--number); }
 .terminal-input {
   flex: 1;
@@ -536,7 +653,12 @@ html, body {
   outline: none;
 }
 
-/* Run output */
+.tool-window.collapsed { display: none; }
+.editor.reformat-flash { animation: reformatFlash 0.5s ease; }
+@keyframes reformatFlash { 0%,100% { filter: none; } 50% { filter: brightness(1.15); } }
+
+.minimap.hidden { display: none !important; }
+
 .run-line { padding: 2px 0; }
 .run-pass { color: var(--green); }
 .run-fail { color: var(--red); }
